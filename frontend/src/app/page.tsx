@@ -1,4 +1,6 @@
 import React from 'react';
+import { Logo } from '@/components/common/Logo';
+import { NavActions, HeroActions } from '@/components/landing/LandingActions';
 import styles from './page.module.css';
 
 export default function Home() {
@@ -7,15 +9,11 @@ export default function Home() {
       {/* Navigation */}
       <nav className={styles.nav}>
         <div className={`container ${styles.navContainer}`}>
-          <div className={styles.logo}>
-            <div className={styles.logoIcon}></div>
-            <span>AudioSmith</span>
-          </div>
+          <Logo />
           <div className={styles.navLinks}>
             <a href="#features">Features</a>
             <a href="#how-it-works">How it works</a>
-            <button className={styles.loginBtn}>Log In</button>
-            <button className={styles.signupBtn}>Get Started</button>
+            <NavActions />
           </div>
         </div>
       </nav>
@@ -34,10 +32,7 @@ export default function Home() {
             <p className={styles.subtitle}>
               Upload your noisy audio and let our advanced deep learning model extract pristine human speech in seconds. Perfect for podcasts, interviews, and professional productions.
             </p>
-            <div className={styles.ctaGroup}>
-              <button className={styles.primaryBtn}>Try for Free</button>
-              <button className={styles.secondaryBtn}>Watch Demo</button>
-            </div>
+            <HeroActions />
           </div>
           
           <div className={`${styles.heroVisual} animate-float`}>

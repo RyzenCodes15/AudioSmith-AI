@@ -6,6 +6,8 @@ export const metadata: Metadata = {
   description: "Remove background noise from human speech recordings using state-of-the-art deep learning.",
 };
 
+import { AuthProvider } from "@/lib/auth/AuthContext";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -14,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <main>{children}</main>
+        <AuthProvider>
+          <main>{children}</main>
+        </AuthProvider>
       </body>
     </html>
   );

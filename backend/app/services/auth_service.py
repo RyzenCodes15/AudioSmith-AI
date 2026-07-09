@@ -96,3 +96,31 @@ class AuthService:
             "token_type": "bearer",
             "expires_in": self._settings.jwt_access_token_expire_minutes * 60,
         }
+
+    async def refresh_token(self, refresh_token_str: str) -> dict:
+        """Issue new access token using a valid refresh token."""
+        from jose import JWTError
+        from app.core.security import decode_token
+        
+        try:
+            payload = decode_token(refresh_token_str)
+            user_id = payload.get("sub")
+            token_type = payload.get("type")
+            
+            if not user_id or token_type != "refresh":
+                raise AuthenticationError("Invalid refresh token type.")
+        except JWTError:
+            raise AuthenticationError("Invalid or expired refresh token.")
+            
+        user = await self._user_repo.get_by_id(user_id)
+        if not user or not user.is_active:
+            raise AuthenticationError("User is inactive or not found.")
+            
+        new_access_token = create_access_token(subject=user.id)
+        
+        return {
+            "access_token": new_access_token,
+            "refresh_token": refresh_token_str, # Keep same refresh token until it expires
+            "token_type": "bearer",
+            "expires_in": self._settings.jwt_access_token_expire_minutes * 60,
+        }
