@@ -1,0 +1,75 @@
+# AudioSmith AI — CI Pipeline
+# This workflow runs on every push and pull request.
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend (Python)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -e ".[dev]"
+      - name: Lint
+        run: |
+          cd backend
+          ruff check .
+          ruff format --check .
+      - name: Test
+        run: |
+          cd backend
+          pytest -v
+
+  frontend:
+    name: Frontend (Next.js)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+      - name: Lint
+        run: |
+          cd frontend
+          npm run lint
+      - name: Type check
+        run: |
+          cd frontend
+          npx tsc --noEmit
+      - name: Build
+        run: |
+          cd frontend
+          npm run build
+
+  ml:
+    name: ML Pipeline (Python)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          cd ml
+          pip install -e ".[dev]"
+      - name: Lint
+        run: |
+          cd ml
+          ruff check .
+          ruff format --check .

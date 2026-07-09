@@ -1,0 +1,18 @@
+# ============================================================================
+# AudioSmith AI — Frontend Dockerfile
+# ============================================================================
+
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Dependencies
+COPY frontend/package.json frontend/package-lock.json* ./
+RUN npm ci
+
+# Application code
+COPY frontend/ .
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]

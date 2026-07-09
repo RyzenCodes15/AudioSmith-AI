@@ -1,0 +1,121 @@
+# ============================================================================
+# AudioSmith AI — Docker Compose
+# ============================================================================
+# Local development stack.
+# Usage: docker compose up -d
+# ============================================================================
+
+services:
+  # --------------------------------------------------------------------------
+  # Frontend — Next.js 15
+  # --------------------------------------------------------------------------
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+      - NEXT_PUBLIC_APP_NAME=AudioSmith AI
+    depends_on:
+      - backend
+    networks:
+      - audiosmith
+
+  # --------------------------------------------------------------------------
+  # Backend — FastAPI
+  # --------------------------------------------------------------------------
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./ml:/app/ml
+      - audiosmith-storage:/app/storage
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - audiosmith
+
+  # --------------------------------------------------------------------------
+  # Worker — Celery (audio processing)
+  # --------------------------------------------------------------------------
+  worker:
+    build:
+      context: .
+      dockerfile: docker/worker.Dockerfile
+    volumes:
+      - ./backend:/app
+      - ./ml:/app/ml
+      - audiosmith-storage:/app/storage
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - audiosmith
+
+  # --------------------------------------------------------------------------
+  # PostgreSQL
+  # --------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    volumes:
+      - audiosmith-postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: audiosmith
+      POSTGRES_PASSWORD: audiosmith_dev_password
+      POSTGRES_DB: audiosmith
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U audiosmith"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - audiosmith
+
+  # --------------------------------------------------------------------------
+  # Redis — Message broker + result backend
+  # --------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - audiosmith-redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - audiosmith
+
+# ----------------------------------------------------------------------------
+# Volumes
+# ----------------------------------------------------------------------------
+volumes:
+  audiosmith-postgres:
+  audiosmith-redis:
+  audiosmith-storage:
+
+# ----------------------------------------------------------------------------
+# Networks
+# ----------------------------------------------------------------------------
+networks:
+  audiosmith:
+    driver: bridge

@@ -1,0 +1,19 @@
+model:
+  name: "deepfilternet"
+  architecture: "DeepFilterNet3"
+
+audio:
+  sample_rate: 48000
+  max_duration_seconds: 300
+
+training:
+  batch_size: 16
+  learning_rate: 0.0001
+  num_epochs: 100
+  optimizer: "adamw"
+  scheduler: "cosine_annealing"
+
+data:
+  clean_dataset: "librispeech"
+  noise_dataset: "musan"
+  snr_range: [0.0, 20.0]

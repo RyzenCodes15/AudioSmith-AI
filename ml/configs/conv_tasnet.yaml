@@ -1,0 +1,18 @@
+model:
+  name: "conv_tasnet"
+  architecture: "ConvTasNet"
+  
+audio:
+  sample_rate: 16000
+  max_duration_seconds: 300
+
+training:
+  batch_size: 8
+  learning_rate: 0.001
+  num_epochs: 100
+  optimizer: "adam"
+  
+data:
+  clean_dataset: "librispeech"
+  noise_dataset: "musan"
+  snr_range: [0.0, 20.0]

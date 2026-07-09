@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "audiosmith-ml"
+version = "0.1.0"
+description = "AudioSmith AI — ML Pipeline for speech enhancement"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+
+dependencies = [
+    # Core ML
+    "torch>=2.4.0",
+    "torchaudio>=2.4.0",
+    "torchvision>=0.19.0", # For saving waveform/spectrogram images
+    
+    # Optional models
+    "deepfilternet>=0.5.6",
+    # "asteroid>=0.7.0", # Future
+    
+    # Data & Audio Processing
+    "numpy>=1.26.0",
+    "librosa>=0.10.2",
+    "soundfile>=0.12.1",
+    
+    # Visualization
+    "matplotlib>=3.9.0",
+    
+    # Evaluation
+    "pesq>=0.0.4",
+    "pystoi>=0.3.3",
+    
+    # Configuration
+    "pyyaml>=6.0.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "ruff>=0.7.0",
+    "mypy>=1.13.0",
+    "jupyter>=1.1.1",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+src = ["ml"]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "N", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
