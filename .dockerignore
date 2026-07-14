@@ -71,20 +71,20 @@ temp/
 
 # AudioSmith specific
 storage/
-data/
-datasets/
-checkpoints/
-weights/
-outputs/
-logs/
-experiments/
-mlruns/
-wandb/
-artifacts/
-events.out.tfevents.*
-uploads/
-enhanced/
-visualizations/
+**/data/
+**/datasets/
+**/checkpoints/
+**/weights/
+**/outputs/
+**/logs/
+**/experiments/
+**/mlruns/
+**/wandb/
+**/artifacts/
+**/events.out.tfevents.*
+**/uploads/
+**/enhanced/
+**/visualizations/
 
 # Media formats that should not be in the build context
 *.wav

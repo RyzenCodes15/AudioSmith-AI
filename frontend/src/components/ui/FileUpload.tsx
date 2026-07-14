@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
+import { useDropzone, FileRejection } from 'react-dropzone';
 import { motion } from 'framer-motion';
 import { UploadCloud, X, AlertCircle } from 'lucide-react';
 import styles from './FileUpload.module.css';
@@ -20,7 +20,7 @@ export function FileUpload({
   const [error, setError] = useState<string | null>(null);
 
   const onDrop = useCallback(
-    async (acceptedFiles: File[], fileRejections: { errors: { code: string; message: string }[] }[]) => {
+    async (acceptedFiles: File[], fileRejections: FileRejection[]) => {
       setError(null);
       
       if (fileRejections.length > 0) {

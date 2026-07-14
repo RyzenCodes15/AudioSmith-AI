@@ -13,14 +13,13 @@ services:
     build:
       context: .
       dockerfile: docker/frontend.Dockerfile
+      args:
+        BACKEND_PROXY_URL: http://backend:8000
     ports:
       - "3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /app/.next
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+      - INTERNAL_API_URL=http://backend:8000/api/v1
+      - BACKEND_PROXY_URL=http://backend:8000
       - NEXT_PUBLIC_APP_NAME=AudioSmith AI
     depends_on:
       - backend
@@ -37,8 +36,6 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/app
-      - ./ml:/app/ml
       - audiosmith-storage:/app/storage
     env_file:
       - .env
@@ -58,8 +55,6 @@ services:
       context: .
       dockerfile: docker/worker.Dockerfile
     volumes:
-      - ./backend:/app
-      - ./ml:/app/ml
       - audiosmith-storage:/app/storage
     env_file:
       - .env

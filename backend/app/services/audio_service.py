@@ -93,6 +93,10 @@ class AudioService:
         # Save via StorageBackend
         await self._storage.save(storage_path, content)
 
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"Upload received: {filename} ({file_size} bytes, {content_type})")
+
         # Create AudioFile record
         audio_file = AudioFile(
             id=file_id,
@@ -118,6 +122,7 @@ class AudioService:
             status="pending",
         )
         await self._job_repo.add(processing_job)
+        logger.info(f"Job created: {job_id} for audio_file: {file_id}")
 
         # Trigger Celery task
         from app.core.celery_client import celery_client

@@ -4,7 +4,9 @@
  * Handles communication with the FastAPI backend.
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+const API_BASE_URL = typeof window !== 'undefined'
+  ? '/api/v1' // Client side: use Next.js proxy
+  : (process.env.INTERNAL_API_URL || 'http://backend:8000/api/v1'); // Server side: use internal Docker network
 
 export class ApiClient {
   private static async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {

@@ -6,10 +6,9 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# System dependencies
+# System dependencies (removed ffmpeg and libsndfile1 as API does not process audio)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libsndfile1 \
-    ffmpeg \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Python dependencies
@@ -17,8 +16,8 @@ COPY backend/pyproject.toml .
 RUN pip install --no-cache-dir "."
 
 # Application code
-COPY backend/ .
-COPY ml/ ./ml/
+COPY backend/alembic.ini ./
+COPY backend/app/ ./app/
 
 EXPOSE 8000
 
