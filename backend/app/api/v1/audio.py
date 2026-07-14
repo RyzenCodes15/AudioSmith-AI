@@ -6,7 +6,7 @@ Handles audio file upload, download, and metadata retrieval.
 
 from __future__ import annotations
 
-from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi import APIRouter, File, HTTPException, UploadFile, Response
 
 from app.api.v1.schemas.audio import AudioFileResponse, AudioUploadResponse
 from app.dependencies import AudioServiceDep, CurrentUserDep
@@ -64,10 +64,25 @@ async def download_audio(
     audio_id: str,
     current_user: CurrentUserDep,
     audio_service: AudioServiceDep,
-) -> None:
+) -> Response:
     """Download an audio file (original or enhanced)."""
-    # Future: delegate to AudioService, return StreamingResponse
-    raise NotImplementedError("Audio download not yet implemented.")
+    try:
+        content, filename = await audio_service.get_audio_content(audio_id, current_user.id)
+        # Determine content type based on extension
+        ext = filename.split(".")[-1].lower() if "." in filename else "wav"
+        media_type = f"audio/{ext}"
+        if ext == "mp3":
+            media_type = "audio/mpeg"
+        
+        return Response(
+            content=content,
+            media_type=media_type,
+            headers={
+                "Content-Disposition": f'attachment; filename="{filename}"'
+            }
+        )
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @router.delete("/{audio_id}", status_code=204)

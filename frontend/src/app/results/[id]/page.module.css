@@ -1,0 +1,258 @@
+.resultsWrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  border-bottom: 1px solid var(--border-subtle);
+  background-color: var(--bg-surface);
+  padding: 16px 0;
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.backBtn:hover {
+  color: var(--text-primary);
+}
+
+.mainContent {
+  flex: 1;
+  padding: 48px 0;
+}
+
+.successSection, .processingSection, .failedSection {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 48px auto;
+  padding: 48px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+}
+
+.iconWrapper {
+  color: #10B981;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.iconWrapperProcessing {
+  color: #3b82f6;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.iconWrapperFailed {
+  color: #ef4444;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.pulseIcon {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+}
+
+.helperText {
+  font-size: 0.9rem;
+  color: var(--text-tertiary);
+}
+
+.actionButtons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.primaryBtn {
+  padding: 12px 24px;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.primaryBtn:hover {
+  background-color: var(--primary-hover);
+}
+
+.deleteBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background-color: transparent;
+  color: #ef4444;
+  border: 1px solid #ef4444;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.deleteBtn:hover {
+  background-color: #fee2e2;
+}
+
+.audioSection {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.audioCard {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  box-shadow: var(--shadow-md);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.cardTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.downloadBtn, .downloadBtnPrimary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.downloadBtn {
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-medium);
+}
+
+.downloadBtn:hover {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+}
+
+.downloadBtnPrimary {
+  background-color: var(--primary);
+  color: white;
+  border: 1px solid var(--primary);
+}
+
+.downloadBtnPrimary:hover {
+  background-color: var(--primary-hover);
+}
+
+.stats {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-tertiary);
+  font-size: 0.9rem;
+}
+
+.stats span {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background-color: var(--bg-base);
+  border-radius: var(--radius-full);
+}
+
+.loading, .error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  height: 100vh;
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+}
+
+.loadingAudio {
+  padding: 48px;
+  text-align: center;
+  color: var(--text-secondary);
+  background-color: var(--bg-base);
+  border-radius: 8px;
+  border: 1px dashed var(--border-medium);
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+  color: var(--primary);
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -79,10 +79,37 @@ export class ApiClient {
     return this.request<T>(endpoint, { method: 'GET' });
   }
 
+  static async getBlob(endpoint: string): Promise<Blob> {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: 'GET',
+      headers,
+    });
+    if (!response.ok) {
+      let errorMsg = 'Failed to download file';
+      try {
+        const errorData = await response.json();
+        if (errorData.detail) errorMsg = errorData.detail;
+      } catch (e) {
+        // Ignored if not JSON
+      }
+      throw new Error(errorMsg);
+    }
+    return response.blob();
+  }
+
   static async post<T>(endpoint: string, data: any): Promise<T> {
     return this.request<T>(endpoint, {
       method: 'POST',
       body: data instanceof FormData ? data : JSON.stringify(data),
     });
+  }
+
+  static async delete<T>(endpoint: string): Promise<T> {
+    return this.request<T>(endpoint, { method: 'DELETE' });
   }
 }

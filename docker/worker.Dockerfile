@@ -10,11 +10,14 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libsndfile1 \
     ffmpeg \
+    build-essential \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 # Python dependencies
 COPY backend/pyproject.toml .
-RUN pip install --no-cache-dir -e "."
+COPY ml/pyproject.toml ./ml/
+RUN pip install --no-cache-dir "./ml" "."
 
 # Application code
 COPY backend/ .

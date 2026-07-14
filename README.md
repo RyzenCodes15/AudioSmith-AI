@@ -26,6 +26,14 @@ The ML inference pipeline uses [DeepFilterNet](https://github.com/Rikorose/DeepF
 - **Audio Visualizations**: Automatically generates waveform and spectrogram comparisons.
 - **Clean Architecture**: Backend and ML layers are highly decoupled using abstractions.
 
+## AI Inference Flow
+
+AudioSmith's core functionality relies on DeepFilterNet. The end-to-end processing guarantees high fidelity results:
+1. **Model Loading**: The model weights are loaded precisely once per Celery worker upon process initialization (`worker_process_init`). A file-lock prevents race conditions. It dynamically binds to a GPU if available, or falls back to the CPU, retaining the model purely in memory for zero-latency sequential jobs.
+2. **Preprocessing**: The `torchaudio` library fetches the raw binary, decodes it, and resamples it to `48kHz` (DeepFilterNet's required sample rate) while ensuring it is loaded as a `float32` PyTorch tensor. 
+3. **Inference**: The worker dispatches the tensor to the `df.enhance` pipeline, which operates seamlessly in the background without blocking the FastAPI HTTP event loop.
+4. **Postprocessing**: The enhanced tensor is peak-normalized (0.99) to prevent clipping. It is then encoded back into a `.wav` file securely via Python's `tempfile` memory boundaries before being saved to local storage.
+
 ## Tech Stack
 
 | Layer | Technology |
@@ -57,6 +65,33 @@ docker compose up --build -d
 
 # 5. Verify application startup
 docker compose ps
+```
+
+### Asset Management & Storage Strategy
+To keep the repository lightweight and cloning fast, large binaries (datasets, model checkpoints, processed audio) are **never** committed to Git. Instead, they are managed externally via scripts and configured via environment variables.
+
+To fetch required external assets (if any are needed for offline ML model loading or datasets), run:
+```bash
+./scripts/download_assets.sh
+```
+
+**Storage Locations:**
+- `storage/`: (Ignored in Git) Where user-uploaded and AI-enhanced audio files are saved locally.
+- `checkpoints/`: (Ignored in Git) Where downloaded `.pt` / `.onnx` models are stored.
+- `datasets/`: (Ignored in Git) Where large `.zip` / `.tar.gz` datasets go.
+
+**Safe Cleanup:**
+If you wish to free up local disk space or wipe data:
+```bash
+# Wipe database & redis data
+docker compose down -v
+
+# Clear user audio uploads
+rm -rf storage/*
+
+# Clear all local Python caches and Next.js builds
+find . -type d \( -name "__pycache__" -o -name ".pytest_cache" -o -name ".ruff_cache" \) -exec rm -rf {} +
+rm -rf frontend/.next frontend/out
 ```
 
 ### Environment Variables

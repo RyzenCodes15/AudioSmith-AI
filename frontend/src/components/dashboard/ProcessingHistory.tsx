@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FileAudio, Clock, Activity, HardDrive } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { ApiClient } from '@/lib/api/client';
 import styles from './ProcessingHistory.module.css';
 
@@ -14,25 +15,54 @@ interface AudioUpload {
 }
 
 export function ProcessingHistory({ refreshTrigger }: { refreshTrigger: number }) {
+  const router = useRouter();
   const [uploads, setUploads] = useState<AudioUpload[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchHistory = async () => {
+    let isSubscribed = true;
+    let timeoutId: NodeJS.Timeout;
+
+    const fetchHistory = async (isInitial = false) => {
       try {
-        setLoading(true);
+        if (isInitial) setLoading(true);
         const data = await ApiClient.get<AudioUpload[]>('/uploads');
-        setUploads(data);
+        
+        if (!isSubscribed) return;
+        
+        setUploads(prev => {
+          if (prev.length > 0 && !isInitial) {
+            const newlyCompleted = data.find(d => 
+              d.status === 'completed' && 
+              prev.some(p => p.id === d.id && p.status !== 'completed')
+            );
+            if (newlyCompleted) {
+              router.push(`/results/${newlyCompleted.id}`);
+            }
+          }
+          return data;
+        });
+
+        const hasPending = data.some(d => d.status === 'pending' || d.status === 'processing');
+        if (hasPending && isSubscribed) {
+          timeoutId = setTimeout(() => fetchHistory(false), 3000);
+        }
       } catch (err) {
         const error = err as Error;
-        setError(error.message || 'Failed to load history');
+        if (isSubscribed) setError(error.message || 'Failed to load history');
       } finally {
-        setLoading(false);
+        if (isSubscribed && isInitial) setLoading(false);
       }
     };
-    fetchHistory();
-  }, [refreshTrigger]);
+
+    fetchHistory(true);
+
+    return () => {
+      isSubscribed = false;
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [refreshTrigger, router]);
 
   const formatSize = (bytes: number) => {
     return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
@@ -82,6 +112,9 @@ export function ProcessingHistory({ refreshTrigger }: { refreshTrigger: number }
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
+                onClick={() => router.push(`/results/${upload.id}`)}
+                className={styles.clickableRow}
+                style={{ cursor: 'pointer' }}
               >
                 <td>
                   <div className={styles.filenameCell}>
@@ -92,6 +125,7 @@ export function ProcessingHistory({ refreshTrigger }: { refreshTrigger: number }
                 <td>
                   <span className={`${styles.status} ${styles[upload.status]}`}>
                     {upload.status === 'pending' && <Activity size={12} />}
+                    {upload.status === 'processing' && <Activity size={12} />}
                     {upload.status.charAt(0).toUpperCase() + upload.status.slice(1)}
                   </span>
                 </td>

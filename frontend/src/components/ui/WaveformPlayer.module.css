@@ -1,0 +1,59 @@
+.wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+  margin: 16px 0;
+}
+
+.controls {
+  flex-shrink: 0;
+  margin-top: 24px;
+}
+
+.playButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.playButton:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+  transform: scale(1.05);
+}
+
+.playButton:disabled {
+  background-color: var(--border-medium);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.visuals {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.waveform {
+  width: 100%;
+  background-color: var(--bg-surface);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.spectrogram {
+  width: 100%;
+  background-color: var(--bg-surface);
+  border-radius: 8px;
+  overflow: hidden;
+}

@@ -30,6 +30,7 @@ htmlcov/
 # Type checking
 .mypy_cache/
 .pytype/
+.ruff_cache/
 
 # ---------------------------------------------------------------------------
 # Node.js / Frontend
@@ -37,6 +38,8 @@ htmlcov/
 node_modules/
 .next/
 out/
+dist/
+build/
 .turbo/
 *.tsbuildinfo
 
@@ -62,6 +65,9 @@ runs/
 logs/
 mlruns/
 wandb/
+events.out.tfevents.*
+experiments/
+artifacts/
 
 # Jupyter
 .ipynb_checkpoints/
@@ -104,3 +110,4 @@ temp/
 uploads/
 enhanced/
 visualizations/
+storage/

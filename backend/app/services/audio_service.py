@@ -119,6 +119,13 @@ class AudioService:
         )
         await self._job_repo.add(processing_job)
 
+        # Trigger Celery task
+        from app.core.celery_client import celery_client
+        celery_client.send_task(
+            "worker.tasks.audio_processing.enhance_audio",
+            args=[job_id]
+        )
+
         return {
             "id": file_id,
             "filename": filename,
@@ -197,6 +204,26 @@ class AudioService:
             })
 
         return results
+
+    async def get_audio_content(self, audio_id: str, user_id: str) -> tuple[bytes, str]:
+        """Get the raw bytes and content type of an audio file.
+        
+        Args:
+            audio_id: ID of the audio file.
+            user_id: ID of the requesting user.
+            
+        Returns:
+            Tuple of (raw bytes, filename)
+            
+        Raises:
+            NotFoundError: If the audio file doesn't exist.
+        """
+        audio = await self._audio_repo.get_by_id(audio_id)
+        if not audio or audio.user_id != user_id:
+            raise NotFoundError("Audio file", audio_id)
+            
+        content = await self._storage.load(audio.storage_path)
+        return content, audio.filename
 
     async def delete(self, audio_id: str, user_id: str) -> None:
         """Delete an audio file and its storage."""

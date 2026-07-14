@@ -52,15 +52,17 @@ class DeepFilterNetAdapter(BaseSpeechEnhancer):
         if not self._loaded:
             raise RuntimeError("Model not loaded. Call load() first.")
 
-        # Future: implement actual inference
-        # from df.enhance import enhance as df_enhance
-        # enhanced = df_enhance(self._model, self._df_state, audio)
-        # return enhanced
+        from df.enhance import enhance as df_enhance
+        
+        # ensure tensor is on the correct device
+        audio = audio.to(self._device)
+        
+        # DeepFilterNet expects float32 tensor
+        if audio.dtype != torch.float32:
+            audio = audio.to(torch.float32)
 
-        raise NotImplementedError(
-            "DeepFilterNet inference not yet implemented. "
-            "Install deepfilternet and implement the enhance method."
-        )
+        enhanced = df_enhance(self._model, self._df_state, audio)
+        return enhanced
 
     def get_sample_rate(self) -> int:
         """DeepFilterNet operates at 48kHz."""
@@ -79,17 +81,49 @@ class DeepFilterNetAdapter(BaseSpeechEnhancer):
         """
         logger.info("Loading DeepFilterNet model...")
 
-        # Future: implement actual model loading
-        # from df.enhance import init_df
-        # self._model, self._df_state, _ = init_df()
-
+        import sys
+        import types
+        import torchaudio
+        
+        # Monkeypatch torchaudio.backend.common for deepfilternet compatibility with torchaudio >= 2.4.0
+        if "torchaudio.backend.common" not in sys.modules:
+            backend = types.ModuleType('torchaudio.backend')
+            common = types.ModuleType('torchaudio.backend.common')
+            common.AudioMetaData = getattr(torchaudio, 'AudioMetaData', type('AudioMetaData', (), {}))
+            backend.common = common
+            sys.modules['torchaudio.backend'] = backend
+            sys.modules['torchaudio.backend.common'] = common
+            
+        from df.enhance import init_df, enhance
+        
+        # init_df(model_base_dir, config_allow_defaults)
+        # We can pass None to download/use default pretrained
+        import fcntl
+        import os
+        lock_file = os.path.expanduser("~/.cache/download.lock")
+        os.makedirs(os.path.dirname(lock_file), exist_ok=True)
+        with open(lock_file, "w") as f:
+            fcntl.flock(f, fcntl.LOCK_EX)
+            try:
+                self._model, self._df_state, _ = init_df()
+            finally:
+                fcntl.flock(f, fcntl.LOCK_UN)
+        
+        # Determine device dynamically
+        if torch.cuda.is_available():
+            self._device = "cuda"
+        else:
+            self._device = "cpu"
+            
+        self._model = self._model.to(self._device)
         self._loaded = True
-        logger.info("DeepFilterNet model loaded successfully.")
+        logger.info(f"Model loaded successfully. Device selected: {self._device}. Model version: DeepFilterNet3")
 
     def to_device(self, device: str) -> "DeepFilterNetAdapter":
         """Move model to device."""
         self._device = device
-        # Future: move model tensors to device
+        if self._loaded and self._model is not None:
+            self._model = self._model.to(device)
         return self
 
     @property

@@ -3,12 +3,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2 } from 'lucide-react';
 import { FileUpload } from '../ui/FileUpload';
 import { ApiClient } from '@/lib/api/client';
+import { useRouter } from 'next/navigation';
 import styles from './UploadSection.module.css';
 
 export function UploadSection({ onUploadComplete }: { onUploadComplete: () => void }) {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   
+  const router = useRouter();
+
   const handleUpload = async (file: File) => {
     setIsUploading(true);
     setUploadSuccess(false);
@@ -17,13 +20,18 @@ export function UploadSection({ onUploadComplete }: { onUploadComplete: () => vo
     formData.append('file', file);
     
     try {
-      await ApiClient.post('/uploads/upload', formData);
+      const response: any = await ApiClient.post('/uploads/upload', formData);
       setUploadSuccess(true);
       onUploadComplete();
       
-      // Reset success state after a delay
-      setTimeout(() => setUploadSuccess(false), 3000);
-    } finally {
+      // Navigate to results page immediately
+      if (response && response.id) {
+        router.push(`/results/${response.id}`);
+      } else {
+        setTimeout(() => setUploadSuccess(false), 3000);
+      }
+    } catch (err) {
+      console.error(err);
       setIsUploading(false);
     }
   };

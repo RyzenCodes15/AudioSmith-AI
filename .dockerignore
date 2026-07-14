@@ -12,6 +12,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnp.*
+.turbo/
 
 # Python
 **/__pycache__/
@@ -38,6 +39,11 @@ wheels/
 **/.venv
 **/venv/
 **/ENV/
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+**/.tox/
+**/.coverage
 
 # Jupyter
 .ipynb_checkpoints
@@ -48,6 +54,8 @@ wheels/
 .env.development.local
 .env.test.local
 .env.production.local
+*.pem
+*.key
 
 # IDEs and OS files
 .vscode/
@@ -56,24 +64,43 @@ wheels/
 *.swo
 .DS_Store
 Thumbs.db
+*~
+tmp/
+temp/
+*.log
 
 # AudioSmith specific
 storage/
 data/
 datasets/
 checkpoints/
+weights/
 outputs/
 logs/
+experiments/
+mlruns/
+wandb/
+artifacts/
+events.out.tfevents.*
+uploads/
+enhanced/
+visualizations/
+
+# Media formats that should not be in the build context
 *.wav
 *.mp3
 *.flac
 *.ogg
 *.m4a
+
+# ML Binaries
 *.pt
 *.pth
 *.onnx
+*.bin
 
 # Documentation
 docs/
 README.md
 CONTRIBUTING.md
+.agents/
