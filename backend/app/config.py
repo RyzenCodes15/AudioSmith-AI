@@ -53,6 +53,8 @@ class Settings(BaseSettings):
     # ── Storage ──────────────────────────────────────────────────────────
     storage_backend: Literal["local", "s3"] = "local"
     storage_local_path: str = "./storage"
+    upload_max_size_bytes: int = 52428800  # 50 MB
+    upload_allowed_extensions: set[str] = {".wav", ".mp3", ".flac"}
 
     # ── ML / Inference ───────────────────────────────────────────────────
     ml_model_name: str = "deepfilternet"

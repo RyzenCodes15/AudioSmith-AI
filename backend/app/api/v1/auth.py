@@ -7,6 +7,7 @@ Handles user registration, login, token refresh, and profile access.
 from __future__ import annotations
 
 from fastapi import APIRouter
+from pydantic import BaseModel
 
 from app.api.v1.schemas.auth import (
     LoginRequest,
@@ -16,7 +17,7 @@ from app.api.v1.schemas.auth import (
 )
 from app.dependencies import AuthServiceDep, CurrentUserDep
 from app.models.user import User
-from pydantic import BaseModel
+
 
 class RefreshRequest(BaseModel):
     refresh_token: str

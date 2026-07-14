@@ -7,7 +7,8 @@ All specific repositories inherit from this base.
 
 from __future__ import annotations
 
-from typing import Generic, Optional, Sequence, Type, TypeVar
+from collections.abc import Sequence
+from typing import Generic, TypeVar
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -24,7 +25,7 @@ class BaseRepository(Generic[ModelT]):
     for any SQLAlchemy model.
     """
 
-    def __init__(self, model: Type[ModelT], session: AsyncSession) -> None:
+    def __init__(self, model: type[ModelT], session: AsyncSession) -> None:
         self._model = model
         self._session = session
 
@@ -36,7 +37,14 @@ class BaseRepository(Generic[ModelT]):
         await self._session.refresh(instance)
         return instance
 
-    async def get_by_id(self, id: str) -> Optional[ModelT]:
+    async def add(self, instance: ModelT) -> ModelT:
+        """Add and persist a model instance created outside the repository."""
+        self._session.add(instance)
+        await self._session.flush()
+        await self._session.refresh(instance)
+        return instance
+
+    async def get_by_id(self, id: str) -> ModelT | None:
         """Get a record by its primary key."""
         return await self._session.get(self._model, id)
 

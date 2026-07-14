@@ -1,27 +1,22 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/lib/auth/AuthContext';
 import { Logo } from '@/components/common/Logo';
-import { LogOut, UploadCloud, History, Settings } from 'lucide-react';
-import { motion, Variants } from 'framer-motion';
+import { LogOut } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { UploadSection } from '@/components/dashboard/UploadSection';
+import { ProcessingHistory } from '@/components/dashboard/ProcessingHistory';
 import styles from './Dashboard.module.css';
 
 export default function DashboardPage() {
   const { user, logout } = useAuth();
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
-  };
-
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+  const handleUploadComplete = () => {
+    // Trigger history refresh
+    setRefreshTrigger(prev => prev + 1);
   };
 
   return (
@@ -55,41 +50,13 @@ export default function DashboardPage() {
               <h1 className={styles.welcomeTitle}>
                 Welcome back, {user?.full_name?.split(' ')[0] || 'User'}!
               </h1>
-              <p className={styles.welcomeText}>
-                Ready to enhance your audio? Select an option below to get started.
-              </p>
             </motion.div>
 
-            <motion.div 
-              className={styles.cardsGrid}
-              variants={containerVariants}
-              initial="hidden"
-              animate="show"
-            >
-              <motion.div className={styles.actionCard} variants={itemVariants}>
-                <div className={styles.cardIcon}>
-                  <UploadCloud size={32} />
-                </div>
-                <h3 className={styles.cardTitle}>New Enhancement</h3>
-                <p className={styles.cardDesc}>Upload a noisy audio file to isolate speech using our AI model.</p>
-              </motion.div>
-
-              <motion.div className={styles.actionCard} variants={itemVariants}>
-                <div className={styles.cardIcon}>
-                  <History size={32} />
-                </div>
-                <h3 className={styles.cardTitle}>Processing History</h3>
-                <p className={styles.cardDesc}>View and download your previously enhanced audio files.</p>
-              </motion.div>
-
-              <motion.div className={styles.actionCard} variants={itemVariants}>
-                <div className={styles.cardIcon}>
-                  <Settings size={32} />
-                </div>
-                <h3 className={styles.cardTitle}>Account Settings</h3>
-                <p className={styles.cardDesc}>Manage your profile, API keys, and subscription preferences.</p>
-              </motion.div>
-            </motion.div>
+            <UploadSection onUploadComplete={handleUploadComplete} />
+            
+            <div style={{ marginTop: '48px' }}>
+              <ProcessingHistory refreshTrigger={refreshTrigger} />
+            </div>
           </div>
         </main>
       </div>

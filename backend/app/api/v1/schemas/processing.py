@@ -8,7 +8,6 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import StrEnum
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -43,18 +42,18 @@ class ProcessingJobResponse(BaseModel):
     status: JobStatus
     progress_percent: int = Field(default=0, ge=0, le=100)
     created_at: datetime
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
-    error_message: Optional[str] = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
+    error_message: str | None = None
 
 
 class ProcessingMetrics(BaseModel):
     """Audio quality metrics for the processing result."""
 
-    pesq: Optional[float] = Field(default=None, description="PESQ score")
-    stoi: Optional[float] = Field(default=None, description="STOI score")
-    si_sdr: Optional[float] = Field(default=None, description="SI-SDR in dB")
-    snr_improvement: Optional[float] = Field(
+    pesq: float | None = Field(default=None, description="PESQ score")
+    stoi: float | None = Field(default=None, description="STOI score")
+    si_sdr: float | None = Field(default=None, description="SI-SDR in dB")
+    snr_improvement: float | None = Field(
         default=None, description="SNR improvement in dB"
     )
 
@@ -67,4 +66,4 @@ class ProcessingResultResponse(BaseModel):
     enhanced_audio_url: str
     waveform_comparison_url: str
     spectrogram_comparison_url: str
-    metrics: Optional[ProcessingMetrics] = None
+    metrics: ProcessingMetrics | None = None

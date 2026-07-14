@@ -23,9 +23,9 @@ class User(Base, UUIDMixin, TimestampMixin):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     # Relationships
-    audio_files: Mapped[list["AudioFile"]] = relationship(
+    audio_files: Mapped[list[AudioFile]] = relationship(
         "AudioFile", back_populates="user", lazy="selectin"
     )
-    processing_jobs: Mapped[list["ProcessingJob"]] = relationship(
+    processing_jobs: Mapped[list[ProcessingJob]] = relationship(
         "ProcessingJob", back_populates="user", lazy="selectin"
     )

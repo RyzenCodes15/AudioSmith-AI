@@ -59,6 +59,12 @@ docker compose up --build -d
 docker compose ps
 ```
 
+### Environment Variables
+
+If you need to configure upload limits, modify these in your `.env`:
+- `UPLOAD_MAX_SIZE_BYTES` (default: 52428800 for 50MB)
+- `UPLOAD_ALLOWED_EXTENSIONS` (default: `[".wav",".mp3",".flac"]`)
+
 The application will be available at:
 - **Frontend**: http://localhost:3000
 - **API Docs**: http://localhost:8000/api/docs

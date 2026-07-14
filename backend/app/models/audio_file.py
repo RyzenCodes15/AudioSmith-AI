@@ -41,4 +41,4 @@ class AudioFile(Base, UUIDMixin, TimestampMixin):
     )
 
     # Relationships
-    user: Mapped["User"] = relationship("User", back_populates="audio_files")
+    user: Mapped[User] = relationship("User", back_populates="audio_files")

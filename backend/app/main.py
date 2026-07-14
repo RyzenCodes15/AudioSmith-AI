@@ -6,8 +6,8 @@ Creates and configures the FastAPI application instance.
 
 from __future__ import annotations
 
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -58,6 +58,43 @@ def create_app() -> FastAPI:
 
     # ── Routers ──────────────────────────────────────────────────────
     app.include_router(api_v1_router, prefix="/api/v1")
+
+    # ── Exception Handlers ────────────────────────────────────────────
+    from fastapi import Request
+    from fastapi.responses import JSONResponse
+
+    from app.core.exceptions import (
+        AudioSmithError,
+        AuthenticationError,
+        AuthorizationError,
+        ConflictError,
+        NotFoundError,
+        ValidationError,
+    )
+
+    @app.exception_handler(AuthenticationError)
+    async def authentication_error_handler(request: Request, exc: AuthenticationError):
+        return JSONResponse(status_code=401, content={"detail": exc.message})
+
+    @app.exception_handler(AuthorizationError)
+    async def authorization_error_handler(request: Request, exc: AuthorizationError):
+        return JSONResponse(status_code=403, content={"detail": exc.message})
+
+    @app.exception_handler(NotFoundError)
+    async def not_found_error_handler(request: Request, exc: NotFoundError):
+        return JSONResponse(status_code=404, content={"detail": exc.message})
+
+    @app.exception_handler(ConflictError)
+    async def conflict_error_handler(request: Request, exc: ConflictError):
+        return JSONResponse(status_code=409, content={"detail": exc.message})
+
+    @app.exception_handler(ValidationError)
+    async def validation_error_handler(request: Request, exc: ValidationError):
+        return JSONResponse(status_code=422, content={"detail": exc.message})
+
+    @app.exception_handler(AudioSmithError)
+    async def audiosmith_error_handler(request: Request, exc: AudioSmithError):
+        return JSONResponse(status_code=500, content={"detail": exc.message})
 
     return app
 

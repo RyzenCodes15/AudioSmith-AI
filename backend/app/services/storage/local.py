@@ -7,8 +7,9 @@ Suitable for development and single-server deployments.
 
 from __future__ import annotations
 
-import aiofiles
 from pathlib import Path
+
+import aiofiles
 
 from app.core.exceptions import StorageError
 from app.services.storage.base import StorageBackend

@@ -7,7 +7,6 @@ Pydantic models for audio file request/response validation.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -39,7 +38,7 @@ class AudioFileResponse(BaseModel):
     status: str = Field(
         description="Current status: uploaded | processing | completed | failed"
     )
-    enhanced_file_id: Optional[str] = Field(
+    enhanced_file_id: str | None = Field(
         default=None,
         description="ID of the enhanced audio file, if processing is complete",
     )
