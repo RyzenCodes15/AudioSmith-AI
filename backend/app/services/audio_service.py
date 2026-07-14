@@ -226,14 +226,42 @@ class AudioService:
         return content, audio.filename
 
     async def delete(self, audio_id: str, user_id: str) -> None:
-        """Delete an audio file and its storage."""
+        """Delete an audio file and its associated data (jobs, enhanced files, storage)."""
         audio = await self._audio_repo.get_by_id(audio_id)
         if not audio or audio.user_id != user_id:
             raise NotFoundError("Audio file", audio_id)
 
+        # 1. Find all associated processing jobs
+        jobs = await self._job_repo.get_by_user(user_id)
+        job_to_delete = None
+        for job in jobs:
+            if job.audio_file_id == audio_id:
+                job_to_delete = job
+                break
+
+        # 2. If there's a job, delete it to drop the foreign key constraint
+        # and also clean up the enhanced file it generated.
+        if job_to_delete:
+            enhanced_file_id = job_to_delete.enhanced_file_id
+            
+            # Delete the job record first to prevent FK integrity errors
+            await self._job_repo.delete(job_to_delete)
+            
+            # If the job had an enhanced file, delete its storage and record
+            if enhanced_file_id:
+                enhanced_audio = await self._audio_repo.get_by_id(enhanced_file_id)
+                if enhanced_audio:
+                    try:
+                        await self._storage.delete(enhanced_audio.storage_path)
+                    except Exception:
+                        pass # Ignore storage deletion errors for enhanced file
+                    await self._audio_repo.delete(enhanced_audio)
+
+        # 3. Delete the original file storage
         try:
             await self._storage.delete(audio.storage_path)
         except Exception:
-            pass # Ignore if already deleted
+            pass # Ignore if storage is already gone
 
+        # 4. Delete original audio DB record
         await self._audio_repo.delete(audio)

@@ -52,9 +52,11 @@ export default function DashboardPage() {
               </h1>
             </motion.div>
 
-            <UploadSection onUploadComplete={handleUploadComplete} />
+            <div className="glass-panel" style={{ padding: '24px', marginBottom: '32px' }}>
+              <UploadSection onUploadComplete={handleUploadComplete} />
+            </div>
             
-            <div style={{ marginTop: '48px' }}>
+            <div className="glass-panel" style={{ padding: '24px' }}>
               <ProcessingHistory refreshTrigger={refreshTrigger} />
             </div>
           </div>

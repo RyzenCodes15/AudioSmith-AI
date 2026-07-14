@@ -180,6 +180,11 @@ export default function ResultsPage() {
                 <p className={styles.subtitle}>
                   Your audio file <strong>{data.filename}</strong> has been successfully processed by the AI.
                 </p>
+                <div style={{ marginBottom: '32px' }}>
+                  <span className="badge badge-completed" style={{ fontSize: '0.9rem', padding: '6px 16px' }}>
+                    Enhanced with DeepFilterNet v3
+                  </span>
+                </div>
                 
                 <div className={styles.actionButtons}>
                   <button onClick={() => router.push('/dashboard')} className={styles.primaryBtn}>
@@ -261,10 +266,10 @@ export default function ResultsPage() {
                     <div className={styles.loadingAudio}>Loading original audio...</div>
                   )}
                   <div className={styles.stats}>
-                    <span>{formatSize(data.file_size_bytes)}</span>
-                    <span>{data.format.toUpperCase()}</span>
-                    <span>{data.sample_rate} Hz</span>
-                    <span>{formatDuration(data.duration_seconds)}</span>
+                    <span className="badge badge-pending">{formatSize(data.file_size_bytes)}</span>
+                    <span className="badge badge-pending">{data.format.toUpperCase()}</span>
+                    <span className="badge badge-pending">{data.sample_rate} Hz</span>
+                    <span className="badge badge-pending">{formatDuration(data.duration_seconds)}</span>
                   </div>
                 </div>
 
@@ -290,12 +295,12 @@ export default function ResultsPage() {
                   <div className={styles.stats}>
                     {data.enhanced_file_id ? (
                       <>
-                        <span>WAV</span>
-                        <span>48000 Hz</span>
-                        <span>{formatDuration(data.duration_seconds)}</span>
+                        <span className="badge badge-completed">WAV</span>
+                        <span className="badge badge-completed">48000 Hz</span>
+                        <span className="badge badge-completed">{formatDuration(data.duration_seconds)}</span>
                       </>
                     ) : (
-                      <span>Processing failed or incomplete</span>
+                      <span className="badge badge-failed">Processing failed or incomplete</span>
                     )}
                   </div>
                 </div>

@@ -123,9 +123,9 @@ export function ProcessingHistory({ refreshTrigger }: { refreshTrigger: number }
                   </div>
                 </td>
                 <td>
-                  <span className={`${styles.status} ${styles[upload.status]}`}>
-                    {upload.status === 'pending' && <Activity size={12} />}
-                    {upload.status === 'processing' && <Activity size={12} />}
+                  <span className={`badge badge-${upload.status}`}>
+                    {upload.status === 'pending' && <Activity size={12} style={{ marginRight: '4px' }} />}
+                    {upload.status === 'processing' && <Activity size={12} style={{ marginRight: '4px' }} />}
                     {upload.status.charAt(0).toUpperCase() + upload.status.slice(1)}
                   </span>
                 </td>
