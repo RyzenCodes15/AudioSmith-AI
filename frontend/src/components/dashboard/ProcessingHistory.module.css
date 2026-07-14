@@ -3,9 +3,58 @@
   width: 100%;
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
 .heading {
   font-size: 1.5rem;
-  margin-bottom: 24px;
+  margin: 0;
+}
+
+.actionBar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background-color: var(--bg-surface);
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-medium);
+  box-shadow: var(--shadow-sm);
+}
+
+.selectedCount {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.bulkDeleteBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #FEE2E2;
+  color: #DC2626;
+  border: 1px solid #FECACA;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.bulkDeleteBtn:hover:not(:disabled) {
+  background-color: #FECACA;
+  color: #B91C1C;
+}
+
+.bulkDeleteBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .loading, .error, .empty {
@@ -55,6 +104,7 @@
   font-size: 0.95rem;
   border-bottom: 1px solid var(--border-subtle);
   color: var(--text-primary);
+  vertical-align: middle;
 }
 
 .table tr:last-child td {
@@ -65,15 +115,40 @@
   background-color: var(--bg-base);
 }
 
+.checkboxCol {
+  width: 48px;
+  text-align: center;
+  padding-right: 0 !important;
+}
+
+.checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--accent-primary);
+}
+
+.selectedRow {
+  background-color: rgba(255, 126, 95, 0.05) !important;
+}
+
 .filenameCell {
   display: flex;
   align-items: center;
   gap: 12px;
   font-weight: 500;
+  max-width: 250px;
 }
 
 .filenameCell svg {
   color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .metaCell {
@@ -83,37 +158,51 @@
   color: var(--text-secondary);
 }
 
-.status {
-  display: inline-flex;
+.actionsCol {
+  text-align: right;
+  width: 140px;
+}
+
+.rowActions {
+  display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  font-size: 0.8rem;
-  font-weight: 600;
+  justify-content: flex-end;
+  gap: 8px;
+  opacity: 0.5;
+  transition: opacity 0.2s;
 }
 
-.status.pending {
-  background-color: #FEF3C7;
-  color: #D97706;
+.table tr:hover .rowActions {
+  opacity: 1;
 }
 
-.status.completed {
-  background-color: #D1FAE5;
-  color: #059669;
+.iconBtn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
 }
 
-.status.failed {
+.iconBtn:hover {
+  background-color: var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.iconBtnDanger:hover {
   background-color: #FEE2E2;
   color: #DC2626;
 }
 
-.status.processing {
-  background-color: #DBEAFE;
-  color: #2563EB;
+.clickableRow {
+  cursor: pointer;
 }
 
 .clickableRow:hover {
-  background-color: var(--bg-base);
   box-shadow: inset 0 0 0 1px var(--border-medium);
 }

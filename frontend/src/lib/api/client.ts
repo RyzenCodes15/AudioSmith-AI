@@ -72,6 +72,10 @@ export class ApiClient {
       throw new Error(error.detail || 'API request failed');
     }
 
+    if (response.status === 204) {
+      return {} as T;
+    }
+
     return response.json();
   }
 

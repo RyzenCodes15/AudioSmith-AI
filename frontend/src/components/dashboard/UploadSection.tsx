@@ -4,11 +4,13 @@ import { CheckCircle2 } from 'lucide-react';
 import { FileUpload } from '../ui/FileUpload';
 import { ApiClient } from '@/lib/api/client';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/lib/ToastContext';
 import styles from './UploadSection.module.css';
 
 export function UploadSection({ onUploadComplete }: { onUploadComplete: () => void }) {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const { showToast } = useToast();
   
   const router = useRouter();
 
@@ -30,8 +32,9 @@ export function UploadSection({ onUploadComplete }: { onUploadComplete: () => vo
       } else {
         setTimeout(() => setUploadSuccess(false), 3000);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      showToast(err.message || 'Failed to upload audio', 'error');
       setIsUploading(false);
     }
   };

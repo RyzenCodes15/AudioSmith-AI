@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Logo } from '@/components/common/Logo';
 import { ApiClient } from '@/lib/api/client';
+import { useToast } from '@/lib/ToastContext';
 import { motion } from 'framer-motion';
 import { ArrowLeft, CheckCircle, Headphones, Waves, Download, Activity, Trash2, Loader2, XCircle } from 'lucide-react';
 import { WaveformPlayer } from '@/components/ui/WaveformPlayer';
@@ -26,6 +27,7 @@ export default function ResultsPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
+  const { showToast } = useToast();
   
   const [data, setData] = useState<AudioMetadata | null>(null);
   const [loading, setLoading] = useState(true);
@@ -103,9 +105,10 @@ export default function ResultsPage() {
     if (confirm('Are you sure you want to delete this result?')) {
       try {
         await ApiClient.delete(`/uploads/${id}`);
+        showToast('Result deleted successfully', 'success');
         router.push('/dashboard');
       } catch (e) {
-        alert('Failed to delete.');
+        showToast('Failed to delete result', 'error');
       }
     }
   };

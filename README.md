@@ -14,76 +14,73 @@
 
 ## Overview
 
-AudioSmith AI is a sophisticated AI-powered SaaS application that removes background noise from human speech recordings. It is engineered as a full-stack, scalable product featuring a modern web interface and a robust asynchronous processing backend.
+**AudioSmith AI** is a sophisticated, full-stack SaaS application that leverages state-of-the-art deep learning to remove background noise from human speech recordings. Built with scalability and performance in mind, it provides a pristine user experience for podcast editors, video producers, and audio engineers.
 
-The ML inference pipeline uses [DeepFilterNet](https://github.com/Rikorose/DeepFilterNet) by default, abstracted behind clean interfaces that allow for swappable models (e.g., Conv-TasNet for benchmarking).
+The ML inference pipeline uses [DeepFilterNet v3](https://github.com/Rikorose/DeepFilterNet) by default, abstracted behind clean interfaces that allow for swappable models, ensuring zero-latency sequential jobs backed by Redis and Celery.
 
-## Features
+## 🚀 Features
 
-- **High-Quality Speech Enhancement**: Removes background noise while preserving voice clarity.
-- **Modern User Interface**: Feature-driven Next.js frontend with custom design tokens.
-- **Asynchronous Processing**: Celery-backed worker queue prevents API blocking.
-- **Audio Visualizations**: Automatically generates waveform and spectrogram comparisons.
-- **Clean Architecture**: Backend and ML layers are highly decoupled using abstractions.
+- **Pristine Speech Enhancement**: Removes complex background noise while preserving human voice fidelity.
+- **Premium User Interface**: A bespoke Next.js frontend with custom design tokens, glassmorphism aesthetics, and responsive layouts.
+- **Asynchronous ML Pipeline**: Celery-backed worker queues ensure the FastAPI HTTP layer never blocks during heavy inference.
+- **Visual Audio Analytics**: Real-time waveform rendering for both original and enhanced audio tracking.
+- **Bulk Operations**: Intuitive file management with bulk-select and zero-orphan cascading deletions.
+- **Secure Architecture**: JWT-based authentication layered over a PostgreSQL database.
 
-## AI Inference Flow
+## 🧠 System Architecture & Inference Flow
 
-AudioSmith's core functionality relies on DeepFilterNet. The end-to-end processing guarantees high fidelity results:
-1. **Model Loading**: The model weights are loaded precisely once per Celery worker upon process initialization (`worker_process_init`). A file-lock prevents race conditions. It dynamically binds to a GPU if available, or falls back to the CPU, retaining the model purely in memory for zero-latency sequential jobs.
-2. **Preprocessing**: The `torchaudio` library fetches the raw binary, decodes it, and resamples it to `48kHz` (DeepFilterNet's required sample rate) while ensuring it is loaded as a `float32` PyTorch tensor. 
-3. **Inference**: The worker dispatches the tensor to the `df.enhance` pipeline, which operates seamlessly in the background without blocking the FastAPI HTTP event loop.
-4. **Postprocessing**: The enhanced tensor is peak-normalized (0.99) to prevent clipping. It is then encoded back into a `.wav` file securely via Python's `tempfile` memory boundaries before being saved to local storage.
+AudioSmith's architecture strictly decouples the web layer from the machine learning inference engine.
 
-## Tech Stack
+1. **Model Loading**: The model weights (`DeepFilterNet3`) are loaded precisely once per Celery worker upon process initialization (`worker_process_init`). A file-lock prevents initialization race conditions. It dynamically binds to a GPU if available (falling back to CPU), retaining the model purely in memory.
+2. **Preprocessing**: The `torchaudio` library fetches the raw binary from storage, decodes it, and resamples it to `48kHz` (the required sample rate) while ensuring it is loaded as a `float32` PyTorch tensor. 
+3. **Inference**: The worker dispatches the tensor to the `df.enhance` pipeline, which operates asynchronously in the background.
+4. **Postprocessing**: The enhanced tensor is peak-normalized (0.99) to prevent clipping. It is encoded back into a `.wav` file securely via Python's `tempfile` memory boundaries before being saved to local storage.
+
+## 💻 Tech Stack
 
 | Layer | Technology |
 |:---|:---|
-| **Frontend** | Next.js 15, TypeScript, Vanilla CSS |
+| **Frontend** | Next.js 15, TypeScript, React Context, Vanilla CSS |
 | **Backend** | FastAPI, Celery, SQLAlchemy (Async) |
 | **Database & Queue** | PostgreSQL, Redis |
 | **Machine Learning** | PyTorch, torchaudio, DeepFilterNet |
 | **Infrastructure** | Docker, Docker Compose |
 
-## Quick Start (Local Development)
+## 🛠️ Quick Start (Local Development)
 
-The easiest way to run the entire stack locally is via Docker Compose.
+The entire stack is containerized for seamless local deployment.
 
 ```bash
 # 1. Clone repository
 git clone https://github.com/yourusername/AudioSmith.git
 cd AudioSmith
 
-# 2. Copy .env.example to .env
+# 2. Configure Environment
 cp .env.example .env
 
-# 3. Install dependencies (if required)
-# Frontend dependencies are installed in the container, but you can install them locally for IDE support:
-# cd frontend && npm install && cd ..
-
-# 4. Run docker compose up --build
+# 3. Start the Platform
 docker compose up --build -d
 
-# 5. Verify application startup
+# 4. Verify Services
 docker compose ps
 ```
 
+The application will be available at:
+- **Frontend / Web UI**: [http://localhost:3000](http://localhost:3000)
+- **FastAPI OpenAPI Docs**: [http://localhost:8000/api/docs](http://localhost:8000/api/docs)
+
 ### Asset Management & Storage Strategy
-To keep the repository lightweight and cloning fast, large binaries (datasets, model checkpoints, processed audio) are **never** committed to Git. Instead, they are managed externally via scripts and configured via environment variables.
 
-To fetch required external assets (if any are needed for offline ML model loading or datasets), run:
+To ensure lightning-fast Git cloning, large binaries (datasets, model checkpoints, processed audio) are **never** committed to the repository. 
+
+**Storage Volumes:**
+- `storage/`: (Git Ignored) User-uploaded and AI-enhanced audio files.
+- `checkpoints/`: (Git Ignored) Downloaded `.pt` / `.onnx` models.
+
+**Safe Cleanup Command:**
+If you wish to free up local disk space or completely wipe data:
 ```bash
-./scripts/download_assets.sh
-```
-
-**Storage Locations:**
-- `storage/`: (Ignored in Git) Where user-uploaded and AI-enhanced audio files are saved locally.
-- `checkpoints/`: (Ignored in Git) Where downloaded `.pt` / `.onnx` models are stored.
-- `datasets/`: (Ignored in Git) Where large `.zip` / `.tar.gz` datasets go.
-
-**Safe Cleanup:**
-If you wish to free up local disk space or wipe data:
-```bash
-# Wipe database & redis data
+# Wipe database & redis volumes
 docker compose down -v
 
 # Clear user audio uploads
@@ -94,21 +91,10 @@ find . -type d \( -name "__pycache__" -o -name ".pytest_cache" -o -name ".ruff_c
 rm -rf frontend/.next frontend/out
 ```
 
-### Environment Variables
+## 🗺️ Roadmap & Future Enhancements
+- [ ] Add Conv-TasNet support for benchmarking.
+- [ ] Implement chunked streaming for massive audio files.
+- [ ] Implement multi-tier user quotas (Free vs Pro).
 
-If you need to configure upload limits, modify these in your `.env`:
-- `UPLOAD_MAX_SIZE_BYTES` (default: 52428800 for 50MB)
-- `UPLOAD_ALLOWED_EXTENSIONS` (default: `[".wav",".mp3",".flac"]`)
-
-The application will be available at:
-- **Frontend**: http://localhost:3000
-- **API Docs**: http://localhost:8000/api/docs
-
-## Documentation
-
-- [Architecture Overview](docs/ARCHITECTURE.md)
-- [Contributing Guidelines](CONTRIBUTING.md)
-
-## License
-
+## 📄 License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
