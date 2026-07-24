@@ -79,8 +79,8 @@ if [ ! -d "${DATASET_ROOT}/VoiceBank" ]; then
     echo "Downloading VoiceBank-DEMAND (Validation Set)..."
     mkdir -p "${DATASET_ROOT}/VoiceBank"
     # Using a common mirror for VoiceBank-DEMAND testset
-    curl -L "https://datashare.ed.ac.uk/bitstream/handle/10283/2791/clean_testset_wav.zip" -o "${DATASET_ROOT}/VoiceBank/clean_testset_wav.zip"
-    curl -L "https://datashare.ed.ac.uk/bitstream/handle/10283/2791/noisy_testset_wav.zip" -o "${DATASET_ROOT}/VoiceBank/noisy_testset_wav.zip"
+    curl -L "https://datashare.ed.ac.uk/bitstreams/dec213d3-bf57-4777-9663-c24bdce92d5e/download" -o "${DATASET_ROOT}/VoiceBank/clean_testset_wav.zip"
+    curl -L "https://datashare.ed.ac.uk/bitstreams/13c1bfbf-14a6-41db-9b41-8f7310f01ad5/download" -o "${DATASET_ROOT}/VoiceBank/noisy_testset_wav.zip"
     unzip -q "${DATASET_ROOT}/VoiceBank/clean_testset_wav.zip" -d "${DATASET_ROOT}/VoiceBank/"
     unzip -q "${DATASET_ROOT}/VoiceBank/noisy_testset_wav.zip" -d "${DATASET_ROOT}/VoiceBank/"
     rm "${DATASET_ROOT}/VoiceBank/clean_testset_wav.zip" "${DATASET_ROOT}/VoiceBank/noisy_testset_wav.zip"
