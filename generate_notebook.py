@@ -47,7 +47,9 @@ notebook = {
             "outputs": [],
             "source": [
                 "import os\n",
+                "import sys\n",
                 "import subprocess\n",
+                "import re\n",
                 "\n",
                 "REPO_URL = \"https://github.com/yourusername/AudioSmith.git\" # <-- Update this to your repo URL if needed\n",
                 "REPO_DIR = \"/kaggle/working/AudioSmith\"\n",
@@ -61,7 +63,16 @@ notebook = {
                 "os.chdir(REPO_DIR)\n",
                 "\n",
                 "print(\"Installing dependencies...\")\n",
-                "!pip install -e ml/"
+                "with open('ml/pyproject.toml', 'r') as f:\n",
+                "    content = f.read()\n",
+                "deps_match = re.search(r'dependencies\\s*=\\s*\\[(.*?)\\]', content, re.DOTALL)\n",
+                "if deps_match:\n",
+                "    deps_raw = deps_match.group(1)\n",
+                "    deps = [line.split('\"')[1] for line in deps_raw.split('\\n') if '\"' in line]\n",
+                "    print('Found dependencies:', deps)\n",
+                "    subprocess.run([sys.executable, '-m', 'pip', 'install'] + deps, check=True)\n",
+                "else:\n",
+                "    print('Could not parse dependencies')\n"
             ]
         },
         {
@@ -100,8 +111,8 @@ notebook = {
                 "# Optional: Override config to run faster for a demo, or keep default config.\n",
                 "# For example, you can edit ml/configs/train_config.yaml here if needed.\n",
                 "\n",
-                "os.chdir(os.path.join(REPO_DIR, \"ml\"))\n",
-                "!python scripts/finetune.py"
+                "os.chdir(REPO_DIR)\n",
+                "!export PYTHONPATH=. && python ml/scripts/finetune.py"
             ]
         },
         {
@@ -118,8 +129,8 @@ notebook = {
             "metadata": {},
             "outputs": [],
             "source": [
-                "os.chdir(os.path.join(REPO_DIR, \"ml\"))\n",
-                "!python scripts/evaluate.py --checkpoint checkpoints/best_model.pt"
+                "os.chdir(REPO_DIR)\n",
+                "!export PYTHONPATH=. && python ml/scripts/evaluate.py --checkpoint ml/checkpoints/best_model.pt"
             ]
         },
         {
@@ -136,9 +147,9 @@ notebook = {
             "metadata": {},
             "outputs": [],
             "source": [
-                "os.chdir(os.path.join(REPO_DIR, \"ml\"))\n",
-                "!mkdir -p exports\n",
-                "!python scripts/export_model.py --model deepfilternet --checkpoint checkpoints/best_model.pt --output exports/fine_tuned.onnx --format onnx"
+                "os.chdir(REPO_DIR)\n",
+                "!mkdir -p ml/exports\n",
+                "!export PYTHONPATH=. && python ml/scripts/export_model.py --model deepfilternet --checkpoint ml/checkpoints/best_model.pt --output ml/exports/fine_tuned.onnx --format onnx"
             ]
         },
         {
