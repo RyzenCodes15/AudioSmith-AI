@@ -1,0 +1,30 @@
+model_name: "deepfilternet"
+seed: 42
+device: "cuda" # or cpu
+
+datasets:
+  clean_dir: "data/LibriSpeech/train-clean-100"
+  noise_dir: "data/musan"
+  eval_clean_dir: "data/VoiceBank/clean_testset_wav"
+  eval_noisy_dir: "data/VoiceBank/noisy_testset_wav"
+  sample_rate: 48000
+  duration: 3.0 # audio chunk duration in seconds for training
+  snr_range: [-5, 20] # SNR range for mixing clean and noise
+  
+training:
+  batch_size: 16
+  num_epochs: 50
+  learning_rate: 1.0e-4
+  weight_decay: 1.0e-2
+  num_workers: 4
+  mixed_precision: true
+  checkpoint_interval: 5
+  early_stopping_patience: 10
+
+logging:
+  mlflow_tracking_uri: "./mlruns"
+  experiment_name: "DeepFilterNet-FineTuning"
+  
+outputs:
+  checkpoints_dir: "checkpoints"
+  exports_dir: "exports"

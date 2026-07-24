@@ -25,6 +25,14 @@ dependencies = [
     
     # Configuration
     "pyyaml>=6.0.1",
+    
+    # Fine-Tuning & Evaluation
+    "mlflow>=2.15.0",
+    "torchmetrics>=1.4.0",
+    "pesq>=0.0.4",
+    "pystoi>=0.3.3",
+    "requests>=2.31.0",
+    "onnx>=1.15.0",
 ]
 
 [project.optional-dependencies]

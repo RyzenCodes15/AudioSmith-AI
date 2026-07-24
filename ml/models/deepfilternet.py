@@ -115,6 +115,20 @@ class DeepFilterNetAdapter(BaseSpeechEnhancer):
         else:
             self._device = "cpu"
             
+        if checkpoint_path:
+            logger.info(f"Loading custom fine-tuned weights from {checkpoint_path}")
+            state_dict = torch.load(checkpoint_path, map_location=self._device)
+            if "model_state_dict" in state_dict:
+                wrapper_state_dict = state_dict["model_state_dict"]
+                # Strip 'model.' prefix since Trainer wrapped it in FineTuneWrapper
+                unwrapped_state_dict = {k.replace('model.', ''): v for k, v in wrapper_state_dict.items() if k.startswith('model.')}
+                if not unwrapped_state_dict:
+                     # fallback if it wasn't prefixed
+                     unwrapped_state_dict = wrapper_state_dict
+                self._model.load_state_dict(unwrapped_state_dict, strict=False)
+            else:
+                self._model.load_state_dict(state_dict, strict=False)
+                
         self._model = self._model.to(self._device)
         self._loaded = True
         logger.info(f"Model loaded successfully. Device selected: {self._device}. Model version: DeepFilterNet3")

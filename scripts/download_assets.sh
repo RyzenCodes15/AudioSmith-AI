@@ -56,15 +56,42 @@ echo -e "${GREEN}✓ No models require manual download at this time.${NC}"
 # ============================================================================
 echo -e "${BLUE}[2/2] Checking Datasets...${NC}"
 
-# Example structure for dataset fetching.
-# if [ ! -f "${DATASET_ROOT}/val_set.zip" ]; then
-#     echo "Downloading validation dataset..."
-#     curl -L "https://example.com/val_set.zip" -o "${DATASET_ROOT}/val_set.zip"
-#     echo -e "${GREEN}✓ Validation dataset downloaded${NC}"
-# else
-#     echo -e "${GREEN}✓ Validation dataset already exists${NC}"
-# fi
-echo -e "${GREEN}✓ No datasets require manual download at this time.${NC}"
+# LibriSpeech (train-clean-100)
+if [ ! -d "${DATASET_ROOT}/LibriSpeech/train-clean-100" ]; then
+    echo "Downloading LibriSpeech (train-clean-100)..."
+    curl -L "http://www.openslr.org/resources/12/train-clean-100.tar.gz" -o "${DATASET_ROOT}/train-clean-100.tar.gz"
+    tar -xzf "${DATASET_ROOT}/train-clean-100.tar.gz" -C "${DATASET_ROOT}"
+    rm "${DATASET_ROOT}/train-clean-100.tar.gz"
+    echo -e "${GREEN}✓ LibriSpeech downloaded and extracted${NC}"
+else
+    echo -e "${GREEN}✓ LibriSpeech already exists${NC}"
+fi
+
+# MUSAN
+if [ ! -d "${DATASET_ROOT}/musan" ]; then
+    echo "Downloading MUSAN..."
+    curl -L "https://www.openslr.org/resources/17/musan.tar.gz" -o "${DATASET_ROOT}/musan.tar.gz"
+    tar -xzf "${DATASET_ROOT}/musan.tar.gz" -C "${DATASET_ROOT}"
+    rm "${DATASET_ROOT}/musan.tar.gz"
+    echo -e "${GREEN}✓ MUSAN downloaded and extracted${NC}"
+else
+    echo -e "${GREEN}✓ MUSAN already exists${NC}"
+fi
+
+# VoiceBank-DEMAND (Validation)
+if [ ! -d "${DATASET_ROOT}/VoiceBank" ]; then
+    echo "Downloading VoiceBank-DEMAND (Validation Set)..."
+    mkdir -p "${DATASET_ROOT}/VoiceBank"
+    # Using a common mirror for VoiceBank-DEMAND testset
+    curl -L "https://datashare.ed.ac.uk/bitstream/handle/10283/2791/clean_testset_wav.zip" -o "${DATASET_ROOT}/VoiceBank/clean_testset_wav.zip"
+    curl -L "https://datashare.ed.ac.uk/bitstream/handle/10283/2791/noisy_testset_wav.zip" -o "${DATASET_ROOT}/VoiceBank/noisy_testset_wav.zip"
+    unzip -q "${DATASET_ROOT}/VoiceBank/clean_testset_wav.zip" -d "${DATASET_ROOT}/VoiceBank/"
+    unzip -q "${DATASET_ROOT}/VoiceBank/noisy_testset_wav.zip" -d "${DATASET_ROOT}/VoiceBank/"
+    rm "${DATASET_ROOT}/VoiceBank/clean_testset_wav.zip" "${DATASET_ROOT}/VoiceBank/noisy_testset_wav.zip"
+    echo -e "${GREEN}✓ VoiceBank-DEMAND downloaded and extracted${NC}"
+else
+    echo -e "${GREEN}✓ VoiceBank-DEMAND already exists${NC}"
+fi
 
 
 echo ""

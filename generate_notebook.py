@@ -1,0 +1,198 @@
+import json
+
+notebook = {
+    "cells": [
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "# AudioSmith AI 🎙️✨ - DeepFilterNet Fine-Tuning\n",
+                "\n",
+                "This notebook fine-tunes the official DeepFilterNet model using the AudioSmith AI machine learning pipeline. It is fully self-contained and orchestrates the dataset preparation, training, evaluation, and export steps automatically.\n",
+                "\n",
+                "### ⚠️ Instructions\n",
+                "1. **Enable GPU**: Ensure the Accelerator in the right panel is set to `GPU P100` or `GPU T4x2`.\n",
+                "2. **Internet**: Ensure Internet is toggled **ON** in the right panel so the repository and datasets can be downloaded.\n",
+                "3. **Run All**: Click **Run All** to start the pipeline."
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "!nvidia-smi\n",
+                "import torch\n",
+                "print(f\"PyTorch Version: {torch.__version__}\")\n",
+                "print(f\"CUDA Available: {torch.cuda.is_available()}\")\n",
+                "if torch.cuda.is_available():\n",
+                "    print(f\"GPU Device: {torch.cuda.get_device_name(0)}\")\n",
+                "else:\n",
+                "    print(\"WARNING: GPU is not enabled! Training will be extremely slow. Please enable a GPU in the Kaggle settings.\")"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "## 1. Clone Repository & Install Dependencies\n",
+                "We clone the AudioSmith repository to use the existing `finetune.py`, `evaluate.py`, and `dataset.py` logic."
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "import os\n",
+                "import subprocess\n",
+                "\n",
+                "REPO_URL = \"https://github.com/yourusername/AudioSmith.git\" # <-- Update this to your repo URL if needed\n",
+                "REPO_DIR = \"/kaggle/working/AudioSmith\"\n",
+                "\n",
+                "if not os.path.exists(REPO_DIR):\n",
+                "    print(f\"Cloning repository from {REPO_URL}...\")\n",
+                "    subprocess.run([\"git\", \"clone\", REPO_URL, REPO_DIR], check=False)\n",
+                "else:\n",
+                "    print(\"Repository already cloned.\")\n",
+                "\n",
+                "os.chdir(REPO_DIR)\n",
+                "\n",
+                "print(\"Installing dependencies...\")\n",
+                "!pip install -e ml/"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "## 2. Prepare Datasets\n",
+                "AudioSmith's `download_assets.sh` script will fetch LibriSpeech (train-clean-100), MUSAN, and VoiceBank-DEMAND. We configure `DATASET_ROOT` so the datasets align with `ml/configs/train_config.yaml`."
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "os.chdir(REPO_DIR)\n",
+                "!chmod +x scripts/download_assets.sh\n",
+                "!export DATASET_ROOT=./ml/data && ./scripts/download_assets.sh"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "## 3. Fine-Tune DeepFilterNet\n",
+                "We run the fine-tuning pipeline. DeepFilterNet's official weights are automatically downloaded internally. The trainer tracks progress via MLflow and saves checkpoints."
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "# Optional: Override config to run faster for a demo, or keep default config.\n",
+                "# For example, you can edit ml/configs/train_config.yaml here if needed.\n",
+                "\n",
+                "os.chdir(os.path.join(REPO_DIR, \"ml\"))\n",
+                "!python scripts/finetune.py"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "## 4. Evaluate Fine-Tuned Model\n",
+                "Evaluate the newly fine-tuned model against the official DeepFilterNet model on the VoiceBank-DEMAND dataset."
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "os.chdir(os.path.join(REPO_DIR, \"ml\"))\n",
+                "!python scripts/evaluate.py --checkpoint checkpoints/best_model.pt"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "## 5. Export Model to ONNX\n",
+                "Export the best checkpoint to an ONNX graph for potential external deployment."
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "os.chdir(os.path.join(REPO_DIR, \"ml\"))\n",
+                "!mkdir -p exports\n",
+                "!python scripts/export_model.py --model deepfilternet --checkpoint checkpoints/best_model.pt --output exports/fine_tuned.onnx --format onnx"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "## 6. Package and Export Artifacts\n",
+                "We zip the `checkpoints`, `exports`, and `mlruns` folders so they can be downloaded easily from the Kaggle Output panel."
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "os.chdir(REPO_DIR)\n",
+                "!zip -r /kaggle/working/AudioSmith_Finetuned_Model.zip ml/checkpoints ml/exports ml/mlruns\n",
+                "print(\"\\n=========================================================\")\n",
+                "print(\"✅ SUCCESS!\\n\")\n",
+                "print(\"Your fine-tuned model has been packaged into `AudioSmith_Finetuned_Model.zip`.\")\n",
+                "print(\"\\n📥 INSTRUCTIONS FOR DEPLOYMENT:\")\n",
+                "print(\"1. Look at the 'Output' panel on the right side of this Kaggle notebook.\")\n",
+                "print(\"2. Download `AudioSmith_Finetuned_Model.zip`.\")\n",
+                "print(\"3. Extract the ZIP file locally.\")\n",
+                "print(\"4. Copy `best_model.pt` into your local AudioSmith repository (e.g., `ml/checkpoints/best_model.pt`).\")\n",
+                "print(\"5. Configure your AudioSmith backend (or `.env`) to load this checkpoint.\")\n",
+                "print(\"6. Enjoy your custom fine-tuned model in production without any backend code changes!\")\n",
+                "print(\"=========================================================\")"
+            ]
+        }
+    ],
+    "metadata": {
+        "kernelspec": {
+            "display_name": "Python 3",
+            "language": "python",
+            "name": "python3"
+        },
+        "language_info": {
+            "codemirror_mode": {
+                "name": "ipython",
+                "version": 3
+            },
+            "file_extension": ".py",
+            "mimetype": "text/x-python",
+            "name": "python",
+            "nbconvert_exporter": "python",
+            "pygments_lexer": "ipython3",
+            "version": "3.10.12"
+        }
+    },
+    "nbformat": 4,
+    "nbformat_minor": 4
+}
+
+with open("AudioSmith_DeepFilterNet_Finetuning.ipynb", "w") as f:
+    json.dump(notebook, f, indent=4)

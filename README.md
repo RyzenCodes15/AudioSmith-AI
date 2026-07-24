@@ -91,6 +91,46 @@ find . -type d \( -name "__pycache__" -o -name ".pytest_cache" -o -name ".ruff_c
 rm -rf frontend/.next frontend/out
 ```
 
+## 🔬 Fine-Tuning Pipeline (ML Engineering)
+
+AudioSmith now includes a complete PyTorch-based machine learning pipeline to fine-tune the official DeepFilterNet model on custom datasets.
+
+### 1. Dataset Preparation
+To download the training datasets (LibriSpeech, MUSAN) and the validation benchmark (VoiceBank-DEMAND), run:
+```bash
+./scripts/download_assets.sh
+```
+
+### 2. Training
+Adjust hyperparameters in `ml/configs/train_config.yaml`. To start fine-tuning:
+```bash
+# Ensure you are in the python environment with ML dependencies
+cd ml
+python scripts/finetune.py
+```
+This script dynamically mixes clean speech with noise, computes the SI-SDR loss, and tracks experiments using MLflow.
+
+### 3. MLflow Tracking
+To view metrics, losses, and training duration:
+```bash
+mlflow ui --backend-store-uri mlruns
+```
+
+### 4. Evaluation
+To evaluate a checkpoint against the VoiceBank-DEMAND dataset (computes PESQ, STOI, SI-SDR, SNR) and compare it with the official model:
+```bash
+python scripts/evaluate.py --checkpoint checkpoints/best_model.pt
+```
+
+### 5. Exporting Models
+Export the fine-tuned model to ONNX format for deployment:
+```bash
+python scripts/export_model.py --model deepfilternet --checkpoint checkpoints/best_model.pt --output exports/fine_tuned.onnx --format onnx
+```
+
+### 6. Loading Custom Checkpoints in AudioSmith
+The backend can load the fine-tuned model directly. Update your `.env` or backend configuration to point to the new `.pt` file, and the application will transparently use the improved weights.
+
 ## 🗺️ Roadmap & Future Enhancements
 - [ ] Add Conv-TasNet support for benchmarking.
 - [ ] Implement chunked streaming for massive audio files.
