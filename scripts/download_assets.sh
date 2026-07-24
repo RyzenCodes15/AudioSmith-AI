@@ -59,9 +59,7 @@ echo -e "${BLUE}[2/2] Checking Datasets...${NC}"
 # LibriSpeech (train-clean-100)
 if [ ! -d "${DATASET_ROOT}/LibriSpeech/train-clean-100" ]; then
     echo "Downloading LibriSpeech (train-clean-100)..."
-    curl -L "http://www.openslr.org/resources/12/train-clean-100.tar.gz" -o "${DATASET_ROOT}/train-clean-100.tar.gz"
-    tar -xzf "${DATASET_ROOT}/train-clean-100.tar.gz" -C "${DATASET_ROOT}"
-    rm "${DATASET_ROOT}/train-clean-100.tar.gz"
+    curl -L "http://www.openslr.org/resources/12/train-clean-100.tar.gz" | tar -xz -C "${DATASET_ROOT}"
     echo -e "${GREEN}✓ LibriSpeech downloaded and extracted${NC}"
 else
     echo -e "${GREEN}✓ LibriSpeech already exists${NC}"
@@ -70,9 +68,7 @@ fi
 # MUSAN
 if [ ! -d "${DATASET_ROOT}/musan" ]; then
     echo "Downloading MUSAN..."
-    curl -L "https://www.openslr.org/resources/17/musan.tar.gz" -o "${DATASET_ROOT}/musan.tar.gz"
-    tar -xzf "${DATASET_ROOT}/musan.tar.gz" -C "${DATASET_ROOT}"
-    rm "${DATASET_ROOT}/musan.tar.gz"
+    curl -L "https://www.openslr.org/resources/17/musan.tar.gz" | tar -xz -C "${DATASET_ROOT}"
     echo -e "${GREEN}✓ MUSAN downloaded and extracted${NC}"
 else
     echo -e "${GREEN}✓ MUSAN already exists${NC}"
