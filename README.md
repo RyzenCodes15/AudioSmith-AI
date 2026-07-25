@@ -1,140 +1,361 @@
-# AudioSmith AI 🎙️✨
-
 <div align="center">
-  <p><strong>Production-grade AI SaaS for professional speech enhancement.</strong></p>
-  
-  ![Python](https://img.shields.io/badge/python-3.11+-blue.svg)
-  ![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg?logo=fastapi)
-  ![Next.js](https://img.shields.io/badge/Next.js-15-000000.svg?logo=next.js)
-  ![PyTorch](https://img.shields.io/badge/PyTorch-2.4+-EE4C2C.svg?logo=pytorch)
-  ![License](https://img.shields.io/badge/license-MIT-green.svg)
+
+# AudioSmith AI 🎙️
+
+**Production-Grade Artificial Intelligence for Professional Audio Enhancement**
+
+AudioSmith AI is a sophisticated full-stack platform engineered to deliver pristine speech enhancement through state-of-the-art deep learning. Designed specifically for audio engineers, podcasters, and content creators, the application seamlessly removes complex background noise and reverberation while preserving the natural fidelity of human speech. 
+
+<br />
+
+<!-- Badges -->
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
+![DeepFilterNet](https://img.shields.io/badge/DeepFilterNet-FF9900?style=for-the-badge&logo=soundcharts&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Celery](https://img.shields.io/badge/Celery-37814A?style=for-the-badge&logo=celery&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-D71F00?style=for-the-badge&logo=sqlalchemy&logoColor=white)
+![WaveSurfer.js](https://img.shields.io/badge/WaveSurfer.js-43B02A?style=for-the-badge&logo=javascript&logoColor=white)
+
+<br />
+
+[Features](#-features) •
+[Architecture](#-architecture) •
+[Tech Stack](#-tech-stack) •
+[Getting Started](#-getting-started) •
+[Screenshots](#-application-walkthrough)
+
 </div>
 
 ---
 
-## Overview
+# 📸 Application Walkthrough
 
-**AudioSmith AI** is a sophisticated, full-stack SaaS application that leverages state-of-the-art deep learning to remove background noise from human speech recordings. Built with scalability and performance in mind, it provides a pristine user experience for podcast editors, video producers, and audio engineers.
+## Landing Page
+<div align="center">
+  <img src="docs/images/landing_page.png" alt="Landing Page" width="800"/>
+</div>
+<br />
+AudioSmith AI welcomes users with a premium, modern landing page showcasing glassmorphism aesthetics and clear value propositions.
 
-The ML inference pipeline uses [DeepFilterNet v3](https://github.com/Rikorose/DeepFilterNet) by default, abstracted behind clean interfaces that allow for swappable models, ensuring zero-latency sequential jobs backed by Redis and Celery.
+---
 
-## 🚀 Features
+## Create Account
+<div align="center">
+  <img src="docs/images/create_account.png" alt="Create Account" width="800"/>
+</div>
+<br />
+A frictionless registration experience securely hashes credentials before persisting them to the database.
 
-- **Pristine Speech Enhancement**: Removes complex background noise while preserving human voice fidelity.
-- **Premium User Interface**: A bespoke Next.js frontend with custom design tokens, glassmorphism aesthetics, and responsive layouts.
-- **Asynchronous ML Pipeline**: Celery-backed worker queues ensure the FastAPI HTTP layer never blocks during heavy inference.
-- **Visual Audio Analytics**: Real-time waveform rendering for both original and enhanced audio tracking.
-- **Bulk Operations**: Intuitive file management with bulk-select and zero-orphan cascading deletions.
-- **Secure Architecture**: JWT-based authentication layered over a PostgreSQL database.
+---
 
-## 🧠 System Architecture & Inference Flow
+## Login
+<div align="center">
+  <img src="docs/images/login.png" alt="Login" width="800"/>
+</div>
+<br />
+Fast, JWT-based authentication ensuring secure access to personal audio workspaces.
 
-AudioSmith's architecture strictly decouples the web layer from the machine learning inference engine.
+---
 
-1. **Model Loading**: The model weights (`DeepFilterNet3`) are loaded precisely once per Celery worker upon process initialization (`worker_process_init`). A file-lock prevents initialization race conditions. It dynamically binds to a GPU if available (falling back to CPU), retaining the model purely in memory.
-2. **Preprocessing**: The `torchaudio` library fetches the raw binary from storage, decodes it, and resamples it to `48kHz` (the required sample rate) while ensuring it is loaded as a `float32` PyTorch tensor. 
-3. **Inference**: The worker dispatches the tensor to the `df.enhance` pipeline, which operates asynchronously in the background.
-4. **Postprocessing**: The enhanced tensor is peak-normalized (0.99) to prevent clipping. It is encoded back into a `.wav` file securely via Python's `tempfile` memory boundaries before being saved to local storage.
+## Dashboard
+<div align="center">
+  <img src="docs/images/dashboard.png" alt="Dashboard" width="800"/>
+</div>
+<br />
+The core workspace features an intuitive drag-and-drop upload zone, complete processing history, and streamlined navigation for optimal user experience.
 
-## 💻 Tech Stack
+---
 
-| Layer | Technology |
-|:---|:---|
-| **Frontend** | Next.js 15, TypeScript, React Context, Vanilla CSS |
-| **Backend** | FastAPI, Celery, SQLAlchemy (Async) |
-| **Database & Queue** | PostgreSQL, Redis |
-| **Machine Learning** | PyTorch, torchaudio, DeepFilterNet |
-| **Infrastructure** | Docker, Docker Compose |
+## Processing
+<div align="center">
+  <img src="docs/images/processing.png" alt="Processing" width="800"/>
+</div>
+<br />
+Real-time progress feedback during asynchronous background processing, detailing the AI enhancement workflow stages.
 
-## 🛠️ Quick Start (Local Development)
+---
 
-The entire stack is containerized for seamless local deployment.
+## Results
+<div align="center">
+  <img src="docs/images/result.png" alt="Results" width="800"/>
+</div>
+<br />
+Interactive side-by-side evaluation of original and enhanced audio. Includes waveform and spectrogram comparisons, synchronized replay capabilities, and direct download links.
 
+---
+
+# ✨ Features
+
+### Authentication
+* **JWT**: Stateless, highly secure token-based access.
+* **Secure login**: Encrypted password verification.
+* **Registration**: Seamless user onboarding with robust input validation.
+
+### Audio Processing
+* **WAV**: Uncompressed, lossless processing.
+* **MP3**: Broadly compatible compressed formats.
+* **FLAC**: High-fidelity lossless audio handling.
+
+### AI Pipeline
+* **Preprocessing**: Automated resampling and format conversion.
+* **Enhancement**: Neural network inference for noise removal.
+* **Postprocessing**: Normalization and anti-clipping measures.
+
+### Visualization
+* **Waveform comparison**: Granular visual feedback of amplitude changes.
+* **Spectrogram comparison**: Frequency domain representation of noise reduction.
+
+### History
+* **Processing history**: Persistent record of all previous jobs.
+* **Replay**: In-browser synchronized playback.
+* **Delete**: Complete file and record removal.
+* **Bulk delete**: Efficient management of large workspaces.
+
+### UI
+* **Responsive**: Flawless experience across mobile, tablet, and desktop devices.
+* **Animations**: Fluid micro-interactions powered by Framer Motion.
+* **Premium design**: Glassmorphism, subtle shadows, and modern typography.
+
+### Backend
+* **FastAPI**: Ultra-fast asynchronous HTTP routing.
+* **Celery**: Reliable background job execution.
+* **Redis**: In-memory message broker for task dispatching.
+* **Asynchronous jobs**: Non-blocking inference processing.
+
+### Database
+* **PostgreSQL**: Robust relational data persistence.
+
+### Docker
+* **Production-ready containers**: Isolated, scalable, and reproducible environments.
+
+### Configuration
+* **Environment variables**: Strict separation of configuration from code.
+* **Modular architecture**: Clean separation of API, logic, and data layers.
+
+---
+
+# 🧠 AI / ML Engineering
+
+AudioSmith AI is fundamentally driven by advanced machine learning engineering, prioritizing low-latency inference and high-fidelity output. 
+
+### DeepFilterNet
+We leverage **DeepFilterNet**, a highly efficient and state-of-the-art deep learning model designed explicitly for real-time speech enhancement. It was chosen for its exceptional balance between computational efficiency and perceptual quality, capable of removing complex, non-stationary background noise while maintaining the structural integrity of the human voice.
+
+### Current Inference Pipeline
+The inference pipeline is heavily optimized for asynchronous execution. Models are loaded precisely once per worker lifecycle, utilizing in-memory caching to prevent disk I/O bottlenecks. Audio tensors are resampled and routed directly through the inference graph, ensuring the web layer remains highly responsive even during intensive processing loads.
+
+### Model Abstraction
+The system utilizes a clean model abstraction layer. The underlying deep learning logic is heavily decoupled from the application routing, meaning the model architecture can be swapped, upgraded, or benchmarked without altering the API or frontend layers.
+
+### Evaluation Metrics Implemented
+The repository includes comprehensive evaluation infrastructure designed to quantify speech enhancement quality. Supported metrics include:
+* **PESQ** (Perceptual Evaluation of Speech Quality)
+* **STOI** (Short-Time Objective Intelligibility)
+* **SI-SDR** (Scale-Invariant Signal-to-Distortion Ratio)
+* **SNR** (Signal-to-Noise Ratio)
+
+### Dataset Support
+The platform's machine learning scripts seamlessly integrate with industry-standard datasets for robust evaluation and experimentation:
+* **LibriSpeech** (Clean speech baseline)
+* **MUSAN** (Music, Speech, and Noise corpus)
+* **VoiceBank-DEMAND** (Noisy speech evaluation benchmark)
+
+*Note: The repository also contains a complete fine-tuning infrastructure for future model customization and experimentation.*
+
+---
+
+# 💻 Tech Stack
+
+| Domain | Technology |
+| :--- | :--- |
+| **Frontend** | Next.js, React, Vanilla CSS, WaveSurfer.js, Framer Motion |
+| **Backend** | FastAPI, Python 3.11+ |
+| **Machine Learning** | PyTorch, Torchaudio, DeepFilterNet |
+| **Database** | PostgreSQL, SQLAlchemy |
+| **Task Queue** | Celery, Redis |
+| **Visualization** | WaveSurfer.js |
+| **Containerization**| Docker, Docker Compose |
+| **Build Tools** | Make, Uvicorn |
+| **Languages** | TypeScript, Python |
+
+---
+
+# 🏛️ Architecture
+
+AudioSmith AI follows a strictly decoupled architecture, ensuring that heavy machine learning workloads never block the HTTP layer.
+
+<div align="center">
+
+```text
+┌─────────────────┐       ┌─────────────────┐       ┌─────────────────┐
+│    Frontend     │       │    REST API     │       │ Authentication  │
+│  (Next.js UI)   │ ────▶ │ (FastAPI Route) │ ────▶ │  (JWT & Hash)   │
+└─────────────────┘       └─────────────────┘       └────────┬────────┘
+                                                             │
+                                                             ▼
+                                                    ┌─────────────────┐
+                                                    │   Task Queue    │
+                                                    │ (Celery/Redis)  │
+                                                    └────────┬────────┘
+                                                             │
+                                                             ▼
+┌─────────────────┐       ┌─────────────────┐       ┌─────────────────┐
+│    Database     │       │     Storage     │       │  DeepFilterNet  │
+│  (PostgreSQL)   │ ◀──── │ (File Volumes)  │ ◀──── │ (ML Inference)  │
+└─────────────────┘       └─────────────────┘       └─────────────────┘
+```
+
+</div>
+
+* **Frontend**: The Next.js client handles all visual rendering, state management, and asset uploads.
+* **REST API**: FastAPI acts as the high-performance gateway, validating requests and managing the data model.
+* **Authentication**: All endpoints are secured via JWT. Passwords are mathematically hashed before reaching the database.
+* **Task Queue**: Heavy audio processing is offloaded to Redis and Celery, keeping the web API entirely non-blocking.
+* **DeepFilterNet**: A dedicated worker consumes the task, loads the audio into memory, and passes it through the PyTorch neural network.
+* **Storage**: Processed binary audio files are safely written to isolated local volumes.
+* **Database**: PostgreSQL tracks job states, file paths, and user metadata.
+
+---
+
+# 📁 Project Structure
+
+```text
+AudioSmith/
+├── backend/            # FastAPI application, SQLAlchemy models, Celery workers
+├── checkpoints/        # Stored ML model weights (.pt files)
+├── datasets/           # Downloaded training and validation corpora
+├── docker/             # Dockerfiles for API, Worker, and Frontend
+├── docs/               # Architecture diagrams and README images
+├── frontend/           # Next.js web application, React components, CSS
+├── ml/                 # Model evaluation and fine-tuning scripts
+├── scripts/            # Utility scripts for asset downloading and environment setup
+├── storage/            # User-uploaded audio and processed results
+├── docker-compose.yml  # Multi-container orchestration
+├── Makefile            # Convenience commands for development
+└── README.md           # Project documentation
+```
+
+* **`backend/`**: Contains the core REST API routing, database schema, and background task definitions.
+* **`checkpoints/`**: Safely holds downloaded deep learning model weights outside of version control.
+* **`datasets/`**: Manages the storage of large audio datasets used for evaluation and ML tooling.
+* **`docker/`**: Houses isolated, production-ready Dockerfiles for every microservice.
+* **`docs/`**: Stores visual assets and documentation graphics.
+* **`frontend/`**: The complete Next.js React application, including custom hooks and UI components.
+* **`ml/`**: Advanced machine learning engineering scripts for computing metrics (PESQ, STOI) and handling PyTorch datasets.
+* **`scripts/`**: Automation scripts to quickly initialize the local environment and fetch required assets.
+* **`storage/`**: The local volume mount where raw and enhanced audio files are securely saved.
+
+---
+
+# 🚀 Getting Started
+
+Follow these steps to launch the entire AudioSmith AI stack locally.
+
+### Prerequisites
+* Docker & Docker Compose
+* Git
+
+### Clone
 ```bash
-# 1. Clone repository
 git clone https://github.com/yourusername/AudioSmith.git
 cd AudioSmith
+```
 
-# 2. Configure Environment
+### Environment Variables
+```bash
 cp .env.example .env
+```
+*(Ensure you review `.env` to configure your specific database credentials if necessary. The defaults work seamlessly with Docker).*
 
-# 3. Start the Platform
+### Docker
+The entire application is strictly containerized. To build and start the services:
+
+```bash
 docker compose up --build -d
+```
 
-# 4. Verify Services
+### Run Locally
+Once the containers are successfully running, access the application:
+* **Web UI**: [http://localhost:3000](http://localhost:3000)
+* **API Docs**: [http://localhost:8000/api/docs](http://localhost:8000/api/docs)
+
+### Useful Commands
+Verify running services:
+```bash
 docker compose ps
 ```
-
-The application will be available at:
-- **Frontend / Web UI**: [http://localhost:3000](http://localhost:3000)
-- **FastAPI OpenAPI Docs**: [http://localhost:8000/api/docs](http://localhost:8000/api/docs)
-
-### Asset Management & Storage Strategy
-
-To ensure lightning-fast Git cloning, large binaries (datasets, model checkpoints, processed audio) are **never** committed to the repository. 
-
-**Storage Volumes:**
-- `storage/`: (Git Ignored) User-uploaded and AI-enhanced audio files.
-- `checkpoints/`: (Git Ignored) Downloaded `.pt` / `.onnx` models.
-
-**Safe Cleanup Command:**
-If you wish to free up local disk space or completely wipe data:
+View backend logs:
 ```bash
-# Wipe database & redis volumes
+docker compose logs -f api
+```
+View Celery worker logs (monitor inference):
+```bash
+docker compose logs -f worker
+```
+Safely tear down the environment:
+```bash
 docker compose down -v
-
-# Clear user audio uploads
-rm -rf storage/*
-
-# Clear all local Python caches and Next.js builds
-find . -type d \( -name "__pycache__" -o -name ".pytest_cache" -o -name ".ruff_cache" \) -exec rm -rf {} +
-rm -rf frontend/.next frontend/out
 ```
 
-## 🔬 Fine-Tuning Pipeline (ML Engineering)
+---
 
-AudioSmith now includes a complete PyTorch-based machine learning pipeline to fine-tune the official DeepFilterNet model on custom datasets.
+# ⚙️ AI Processing Pipeline
 
-### 1. Dataset Preparation
-To download the training datasets (LibriSpeech, MUSAN) and the validation benchmark (VoiceBank-DEMAND), run:
-```bash
-./scripts/download_assets.sh
+<div align="center">
+
+```text
+[ Upload ]
+    ↓
+[ Validation ]
+    ↓
+[ Preprocessing ]
+    ↓
+[ Background Task ]
+    ↓
+[ DeepFilterNet Inference ]
+    ↓
+[ Postprocessing ]
+    ↓
+[ Storage ]
+    ↓
+[ Results ]
 ```
 
-### 2. Training
-Adjust hyperparameters in `ml/configs/train_config.yaml`. To start fine-tuning:
-```bash
-# Ensure you are in the python environment with ML dependencies
-cd ml
-python scripts/finetune.py
-```
-This script dynamically mixes clean speech with noise, computes the SI-SDR loss, and tracks experiments using MLflow.
+</div>
 
-### 3. MLflow Tracking
-To view metrics, losses, and training duration:
-```bash
-mlflow ui --backend-store-uri mlruns
-```
+* **Upload**: The client transmits binary audio data securely to the FastAPI endpoint.
+* **Validation**: The backend verifies file signatures, limits file size, and ensures the format is supported.
+* **Preprocessing**: Audio is loaded into PyTorch via `torchaudio`, converted to `float32` tensors, and resampled to the required 48kHz frequency.
+* **Background Task**: The tensor reference is dispatched to the Celery queue.
+* **DeepFilterNet Inference**: The PyTorch model removes background noise, executing entirely in memory.
+* **Postprocessing**: The resulting enhanced tensor is normalized to prevent audio clipping and artifacts.
+* **Storage**: The finalized audio is encoded back to a standard format and persisted to the storage volume.
+* **Results**: The frontend aggressively polls the job status, eventually rendering the enhanced audio visualizations to the user.
 
-### 4. Evaluation
-To evaluate a checkpoint against the VoiceBank-DEMAND dataset (computes PESQ, STOI, SI-SDR, SNR) and compare it with the official model:
-```bash
-python scripts/evaluate.py --checkpoint checkpoints/best_model.pt
-```
+---
 
-### 5. Exporting Models
-Export the fine-tuned model to ONNX format for deployment:
-```bash
-python scripts/export_model.py --model deepfilternet --checkpoint checkpoints/best_model.pt --output exports/fine_tuned.onnx --format onnx
-```
+# 📐 Design Principles
 
-### 6. Loading Custom Checkpoints in AudioSmith
-The backend can load the fine-tuned model directly. Update your `.env` or backend configuration to point to the new `.pt` file, and the application will transparently use the improved weights.
+* **Clean Architecture**: System boundaries are strictly enforced. The Next.js frontend has absolutely no knowledge of the PyTorch implementation, interacting only via standardized REST contracts.
+* **Separation of Concerns**: Each microservice handles one specific domain. The API routes traffic, the Worker infers, and the UI renders.
+* **Modular Design**: Machine learning models and evaluation scripts are isolated in the `ml/` folder, preventing the backend from becoming bloated with training dependencies.
+* **Dependency Injection**: FastAPI endpoints heavily utilize injected database sessions and authentication dependencies to ensure highly testable code.
+* **Repository Pattern**: Database interactions are abstracted behind repository functions, meaning the core logic is entirely unaware of the underlying SQLAlchemy implementation.
+* **Configuration-driven development**: All environment variables, ports, and model paths are dynamically injected via `.env`, preventing hardcoded configuration.
+* **SOLID principles**: Classes and functions are designed to have single responsibilities, making the codebase highly predictable and easy to extend.
 
-## 🗺️ Roadmap & Future Enhancements
-- [ ] Add Conv-TasNet support for benchmarking.
-- [ ] Implement chunked streaming for massive audio files.
-- [ ] Implement multi-tier user quotas (Free vs Pro).
+---
 
-## 📄 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+# 🗺️ Future Roadmap
+
+* Custom fine-tuned models
+* Training from scratch
+* Model benchmarking
+* Additional denoising architectures
+* ONNX acceleration

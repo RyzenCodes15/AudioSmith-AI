@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libsndfile1 \
     ffmpeg \
     git \
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 # Install PyTorch CPU first to avoid downloading 4GB+ CUDA binaries
