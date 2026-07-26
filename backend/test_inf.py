@@ -14,7 +14,7 @@ headers = {"Authorization": f"Bearer {token}"}
 
 def process_file(filename):
     print(f"\nProcessing {filename}...")
-    filepath = f"/tmp/test_audio/{filename}"
+    filepath = os.path.join(os.path.dirname(__file__), f"../tests/fixtures/audio/{filename}")
     with open(filepath, "rb") as f:
         files = {"file": (filename, f, "audio/" + filename.split(".")[-1])}
         res = requests.post(f"{BASE_URL}/uploads/upload", headers=headers, files=files)

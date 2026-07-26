@@ -111,3 +111,6 @@ uploads/
 enhanced/
 visualizations/
 storage/
+test_env/
+test_audio/
+test_audio_host/

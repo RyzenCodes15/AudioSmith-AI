@@ -65,4 +65,4 @@ def create_noisy_audio(input_file, output_file, loop_count=5):
     print(f"Successfully generated extreme noisy audio at: {output_file}")
     
 if __name__ == "__main__":
-    create_noisy_audio("test.wav", "test_audio/extreme_noise_test.wav", loop_count=5)
+    create_noisy_audio(os.path.join(os.path.dirname(__file__), "../tests/fixtures/audio/test.wav"), os.path.join(os.path.dirname(__file__), "test_audio/extreme_noise_test.wav"), loop_count=5)

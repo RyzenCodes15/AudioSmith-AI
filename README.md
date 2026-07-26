@@ -234,8 +234,11 @@ AudioSmith/
 ├── docs/               # Architecture diagrams and README images
 ├── frontend/           # Next.js web application, React components, CSS
 ├── ml/                 # Model evaluation and fine-tuning scripts
+├── notebooks/          # Jupyter notebooks for model exploration and fine-tuning
 ├── scripts/            # Utility scripts for asset downloading and environment setup
 ├── storage/            # User-uploaded audio and processed results
+├── tests/              # Test suites and test audio fixtures
+├── scratch/            # Local scratch scripts and experimentation tools
 ├── docker-compose.yml  # Multi-container orchestration
 ├── Makefile            # Convenience commands for development
 └── README.md           # Project documentation
