@@ -6,6 +6,7 @@ without importing worker dependencies (like ML models).
 """
 
 from celery import Celery
+
 from app.config import get_settings
 
 settings = get_settings()

@@ -32,8 +32,8 @@ export function LoginForm() {
       });
       await login(response.access_token, response.refresh_token);
       router.push('/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Invalid credentials. Please try again.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Invalid credentials. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -114,7 +114,7 @@ export function LoginForm() {
       </button>
 
       <p className={styles.footerText}>
-        Don't have an account? <Link href="/register" className={styles.footerLink}>Create account</Link>
+        Don&apos;t have an account? <Link href="/register" className={styles.footerLink}>Create account</Link>
       </p>
     </form>
   );

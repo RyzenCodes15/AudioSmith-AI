@@ -8,7 +8,6 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Iterator, Tuple
 
 import torch
 
@@ -26,7 +25,7 @@ class BaseAudioDataset(ABC):
         ...
 
     @abstractmethod
-    def __getitem__(self, index: int) -> Tuple[torch.Tensor, int]:
+    def __getitem__(self, index: int) -> tuple[torch.Tensor, int]:
         """Get a single audio sample.
 
         Args:

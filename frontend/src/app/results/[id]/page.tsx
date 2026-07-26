@@ -107,7 +107,7 @@ export default function ResultsPage() {
         await ApiClient.delete(`/uploads/${id}`);
         showToast('Result deleted successfully', 'success');
         router.push('/dashboard');
-      } catch (e) {
+      } catch {
         showToast('Failed to delete result', 'error');
       }
     }

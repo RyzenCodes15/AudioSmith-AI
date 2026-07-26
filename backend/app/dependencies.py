@@ -7,8 +7,7 @@ and database sessions into route handlers.
 
 from __future__ import annotations
 
-from collections.abc import AsyncGenerator
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
@@ -20,13 +19,16 @@ from app.core.exceptions import AuthenticationError
 from app.core.security import decode_token
 from app.db.session import create_session_factory
 from app.models.user import User
-from app.repositories.user_repository import UserRepository
 from app.repositories.audio_repository import AudioRepository
 from app.repositories.job_repository import JobRepository
-from app.services.auth_service import AuthService
+from app.repositories.user_repository import UserRepository
 from app.services.audio_service import AudioService
+from app.services.auth_service import AuthService
 from app.services.storage.base import StorageBackend
 from app.services.storage.local import LocalStorageBackend
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator
 
 # Type alias for injecting settings
 SettingsDep = Annotated[Settings, Depends(get_settings)]
@@ -36,6 +38,7 @@ async_session_factory = create_session_factory()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 # ── Database Session ─────────────────────────────────────────────────────
+
 
 async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
     """Yield a database session per request."""
@@ -49,33 +52,42 @@ async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
         finally:
             await session.close()
 
+
 DbSessionDep = Annotated[AsyncSession, Depends(get_db_session)]
 
 
 # ── Repository Dependencies ─────────────────────────────────────────────
 
+
 async def get_user_repository(session: DbSessionDep) -> UserRepository:
     return UserRepository(session)
 
+
 UserRepoDep = Annotated[UserRepository, Depends(get_user_repository)]
+
 
 async def get_audio_repository(session: DbSessionDep) -> AudioRepository:
     return AudioRepository(session)
 
+
 AudioRepoDep = Annotated[AudioRepository, Depends(get_audio_repository)]
+
 
 async def get_job_repository(session: DbSessionDep) -> JobRepository:
     return JobRepository(session)
 
+
 JobRepoDep = Annotated[JobRepository, Depends(get_job_repository)]
 
 # ── Service Dependencies ────────────────────────────────────────────────
+
 
 async def get_auth_service(
     user_repo: UserRepoDep,
     settings: SettingsDep,
 ) -> AuthService:
     return AuthService(user_repo, settings)
+
 
 AuthServiceDep = Annotated[AuthService, Depends(get_auth_service)]
 
@@ -84,9 +96,13 @@ async def get_storage_backend(settings: SettingsDep) -> StorageBackend:
     if settings.storage_backend == "local":
         return LocalStorageBackend(base_path=settings.storage_local_path)
     # Future: return S3StorageBackend(...)
-    raise NotImplementedError(f"Storage backend {settings.storage_backend} not implemented")
+    raise NotImplementedError(
+        f"Storage backend {settings.storage_backend} not implemented"
+    )
+
 
 StorageBackendDep = Annotated[StorageBackend, Depends(get_storage_backend)]
+
 
 async def get_audio_service(
     audio_repo: AudioRepoDep,
@@ -96,9 +112,11 @@ async def get_audio_service(
 ) -> AudioService:
     return AudioService(audio_repo, job_repo, storage, settings)
 
+
 AudioServiceDep = Annotated[AudioService, Depends(get_audio_service)]
 
 # ── Authentication ──────────────────────────────────────────────────────
+
 
 async def get_current_user(
     token: Annotated[str, Depends(oauth2_scheme)],
@@ -124,5 +142,6 @@ async def get_current_user(
         raise AuthenticationError("Inactive user.")
 
     return user
+
 
 CurrentUserDep = Annotated[User, Depends(get_current_user)]

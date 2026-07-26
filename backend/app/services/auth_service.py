@@ -6,7 +6,8 @@ Business logic for user registration, login, and token management.
 
 from __future__ import annotations
 
-from app.config import Settings
+from typing import TYPE_CHECKING
+
 from app.core.exceptions import AuthenticationError, ConflictError
 from app.core.security import (
     create_access_token,
@@ -14,7 +15,10 @@ from app.core.security import (
     hash_password,
     verify_password,
 )
-from app.repositories.user_repository import UserRepository
+
+if TYPE_CHECKING:
+    from app.config import Settings
+    from app.repositories.user_repository import UserRepository
 
 
 class AuthService:
@@ -110,8 +114,8 @@ class AuthService:
 
             if not user_id or token_type != "refresh":
                 raise AuthenticationError("Invalid refresh token type.")
-        except JWTError:
-            raise AuthenticationError("Invalid or expired refresh token.")
+        except JWTError as e:
+            raise AuthenticationError("Invalid or expired refresh token.") from e
 
         user = await self._user_repo.get_by_id(user_id)
         if not user or not user.is_active:
@@ -121,7 +125,7 @@ class AuthService:
 
         return {
             "access_token": new_access_token,
-            "refresh_token": refresh_token_str, # Keep same refresh token until it expires
+            "refresh_token": refresh_token_str,
             "token_type": "bearer",
             "expires_in": self._settings.jwt_access_token_expire_minutes * 60,
         }

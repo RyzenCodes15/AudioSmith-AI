@@ -56,7 +56,7 @@ export class ApiClient {
             }
             return retryResponse.json();
           }
-        } catch (e) {
+        } catch {
           // Fallthrough to logout
         }
       }
@@ -100,7 +100,7 @@ export class ApiClient {
       try {
         const errorData = await response.json();
         if (errorData.detail) errorMsg = errorData.detail;
-      } catch (e) {
+      } catch {
         // Ignored if not JSON
       }
       throw new Error(errorMsg);
@@ -108,7 +108,7 @@ export class ApiClient {
     return response.blob();
   }
 
-  static async post<T>(endpoint: string, data: any): Promise<T> {
+  static async post<T>(endpoint: string, data: unknown): Promise<T> {
     return this.request<T>(endpoint, {
       method: 'POST',
       body: data instanceof FormData ? data : JSON.stringify(data),

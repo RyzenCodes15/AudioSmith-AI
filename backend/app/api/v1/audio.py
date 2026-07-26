@@ -6,10 +6,14 @@ Handles audio file upload, download, and metadata retrieval.
 
 from __future__ import annotations
 
-from fastapi import APIRouter, File, HTTPException, UploadFile, Response
+from typing import TYPE_CHECKING, Annotated
+
+from fastapi import APIRouter, File, HTTPException, Response, UploadFile
 
 from app.api.v1.schemas.audio import AudioFileResponse, AudioUploadResponse
-from app.dependencies import AudioServiceDep, CurrentUserDep
+
+if TYPE_CHECKING:
+    from app.dependencies import AudioServiceDep, CurrentUserDep
 
 router = APIRouter()
 
@@ -18,7 +22,7 @@ router = APIRouter()
 async def upload_audio(
     current_user: CurrentUserDep,
     audio_service: AudioServiceDep,
-    file: UploadFile = File(..., description="Audio file to process"),
+    file: Annotated[UploadFile, File(description="Audio file to process")],
 ) -> AudioUploadResponse:
     """Upload a noisy audio file for processing.
 
@@ -35,7 +39,7 @@ async def upload_audio(
         )
         return AudioUploadResponse(**result)
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from e
 
 
 @router.get("", response_model=list[AudioFileResponse])
@@ -67,22 +71,22 @@ async def download_audio(
 ) -> Response:
     """Download an audio file (original or enhanced)."""
     try:
-        content, filename = await audio_service.get_audio_content(audio_id, current_user.id)
+        content, filename = await audio_service.get_audio_content(
+            audio_id, current_user.id
+        )
         # Determine content type based on extension
         ext = filename.split(".")[-1].lower() if "." in filename else "wav"
         media_type = f"audio/{ext}"
         if ext == "mp3":
             media_type = "audio/mpeg"
-        
+
         return Response(
             content=content,
             media_type=media_type,
-            headers={
-                "Content-Disposition": f'attachment; filename="{filename}"'
-            }
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
         )
     except Exception as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=404, detail=str(e)) from e
 
 
 @router.delete("/{audio_id}", status_code=204)
@@ -93,4 +97,3 @@ async def delete_audio(
 ) -> None:
     """Delete an uploaded audio file and its associated data."""
     await audio_service.delete(audio_id, current_user.id)
-

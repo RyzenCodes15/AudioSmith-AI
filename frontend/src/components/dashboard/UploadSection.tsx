@@ -22,7 +22,7 @@ export function UploadSection({ onUploadComplete }: { onUploadComplete: () => vo
     formData.append('file', file);
     
     try {
-      const response: any = await ApiClient.post('/uploads/upload', formData);
+      const response = await ApiClient.post<{id: string}>('/uploads/upload', formData);
       setUploadSuccess(true);
       onUploadComplete();
       
@@ -32,9 +32,9 @@ export function UploadSection({ onUploadComplete }: { onUploadComplete: () => vo
       } else {
         setTimeout(() => setUploadSuccess(false), 3000);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      showToast(err.message || 'Failed to upload audio', 'error');
+      showToast(err instanceof Error ? err.message : 'Failed to upload audio', 'error');
       setIsUploading(false);
     }
   };

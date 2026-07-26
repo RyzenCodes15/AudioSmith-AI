@@ -5,17 +5,16 @@ Revises: 4a4cdae8be74
 Create Date: 2026-07-09 10:05:40.610022
 
 """
-from typing import Sequence, Union
+from collections.abc import Sequence
 
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = '982cfe296588'
-down_revision: Union[str, Sequence[str], None] = '4a4cdae8be74'
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | Sequence[str] | None = '4a4cdae8be74'
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
@@ -32,12 +31,18 @@ def upgrade() -> None:
     sa.Column('channels', sa.Integer(), nullable=False),
     sa.Column('file_type', sa.String(length=20), nullable=False),
     sa.Column('id', sa.String(length=36), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column(
+        'created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'),
+        nullable=False),
+    sa.Column(
+        'updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'),
+        nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_audio_files_user_id'), 'audio_files', ['user_id'], unique=False)
+    op.create_index(
+        op.f('ix_audio_files_user_id'), 'audio_files', ['user_id'], unique=False
+    )
     op.create_table('processing_jobs',
     sa.Column('user_id', sa.String(length=36), nullable=False),
     sa.Column('audio_file_id', sa.String(length=36), nullable=False),
@@ -55,15 +60,23 @@ def upgrade() -> None:
     sa.Column('si_sdr_score', sa.Float(), nullable=True),
     sa.Column('snr_improvement', sa.Float(), nullable=True),
     sa.Column('id', sa.String(length=36), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column(
+        'created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'),
+        nullable=False),
+    sa.Column(
+        'updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'),
+        nullable=False),
     sa.ForeignKeyConstraint(['audio_file_id'], ['audio_files.id'], ),
     sa.ForeignKeyConstraint(['enhanced_file_id'], ['audio_files.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_processing_jobs_status'), 'processing_jobs', ['status'], unique=False)
-    op.create_index(op.f('ix_processing_jobs_user_id'), 'processing_jobs', ['user_id'], unique=False)
+    op.create_index(
+        op.f('ix_processing_jobs_status'), 'processing_jobs', ['status'], unique=False
+    )
+    op.create_index(
+        op.f('ix_processing_jobs_user_id'), 'processing_jobs', ['user_id'], unique=False
+    )
     # ### end Alembic commands ###
 
 

@@ -48,9 +48,7 @@ class PreprocessingPipeline:
         self._normalizer = AudioNormalizer()
         self._target_sr = target_sample_rate
 
-    def process(
-        self, audio: torch.Tensor, sample_rate: int
-    ) -> PreprocessingResult:
+    def process(self, audio: torch.Tensor, sample_rate: int) -> PreprocessingResult:
         """Run the full preprocessing pipeline.
 
         Args:
@@ -63,9 +61,7 @@ class PreprocessingPipeline:
         Raises:
             ValidationError: If audio fails validation checks.
         """
-        logger.info(
-            "Preprocessing: sr=%d, shape=%s", sample_rate, audio.shape
-        )
+        logger.info("Preprocessing: sr=%d, shape=%s", sample_rate, audio.shape)
 
         # Step 1: Validate
         duration = audio.shape[-1] / sample_rate

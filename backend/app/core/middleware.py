@@ -8,9 +8,8 @@ from __future__ import annotations
 
 import logging
 import time
-from collections.abc import Callable
+from typing import TYPE_CHECKING
 
-from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
 
 from app.core.exceptions import (
@@ -21,6 +20,11 @@ from app.core.exceptions import (
     NotFoundError,
     ValidationError,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from fastapi import FastAPI, Request, Response
 
 logger = logging.getLogger(__name__)
 

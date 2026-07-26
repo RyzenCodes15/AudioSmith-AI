@@ -7,8 +7,6 @@ Maps model names to their concrete implementations.
 
 from __future__ import annotations
 
-from typing import Dict, Type
-
 from ml.models.base import BaseSpeechEnhancer
 
 
@@ -30,9 +28,9 @@ class ModelRegistry:
     """
 
     def __init__(self) -> None:
-        self._models: Dict[str, Type[BaseSpeechEnhancer]] = {}
+        self._models: dict[str, type[BaseSpeechEnhancer]] = {}
 
-    def register(self, name: str, model_class: Type[BaseSpeechEnhancer]) -> None:
+    def register(self, name: str, model_class: type[BaseSpeechEnhancer]) -> None:
         """Register a model class under a given name.
 
         Args:
@@ -78,8 +76,7 @@ class ModelRegistry:
         if name not in self._models:
             available = ", ".join(sorted(self._models.keys()))
             raise KeyError(
-                f"Model '{name}' is not registered. "
-                f"Available models: [{available}]"
+                f"Model '{name}' is not registered. Available models: [{available}]"
             )
         return self._models[name](**kwargs)
 

@@ -19,4 +19,6 @@ api_v1_router = APIRouter()
 api_v1_router.include_router(health_router, tags=["Health"])
 api_v1_router.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 api_v1_router.include_router(audio_router, prefix="/uploads", tags=["Uploads"])
-api_v1_router.include_router(processing_router, prefix="/processing", tags=["Processing"])
+api_v1_router.include_router(
+    processing_router, prefix="/processing", tags=["Processing"]
+)

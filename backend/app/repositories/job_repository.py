@@ -6,13 +6,17 @@ Data access layer for processing job database operations.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.processing_job import ProcessingJob
 from app.repositories.base import BaseRepository
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class JobRepository(BaseRepository[ProcessingJob]):

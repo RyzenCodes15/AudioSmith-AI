@@ -8,7 +8,6 @@ This is the standard benchmark for speech enhancement.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Tuple
 
 import torch
 
@@ -49,14 +48,12 @@ class VoiceBankDEMANDDataset(BaseAudioDataset):
 
         self._file_list: list[str] = []
         if self._clean_dir.exists():
-            self._file_list = sorted(
-                f.stem for f in self._clean_dir.glob("*.wav")
-            )
+            self._file_list = sorted(f.stem for f in self._clean_dir.glob("*.wav"))
 
     def __len__(self) -> int:
         return len(self._file_list)
 
-    def __getitem__(self, index: int) -> Tuple[torch.Tensor, int]:
+    def __getitem__(self, index: int) -> tuple[torch.Tensor, int]:
         # Future: returns (clean, noisy) pair
         # clean_path = self._clean_dir / f"{self._file_list[index]}.wav"
         # noisy_path = self._noisy_dir / f"{self._file_list[index]}.wav"
@@ -65,7 +62,7 @@ class VoiceBankDEMANDDataset(BaseAudioDataset):
         # return clean, noisy, sr
         raise NotImplementedError("VoiceBank-DEMAND loading requires torchaudio.")
 
-    def get_pair(self, index: int) -> Tuple[torch.Tensor, torch.Tensor, int]:
+    def get_pair(self, index: int) -> tuple[torch.Tensor, torch.Tensor, int]:
         """Get a (clean, noisy) pair for evaluation.
 
         Returns:

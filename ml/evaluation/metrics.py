@@ -29,9 +29,7 @@ class QualityMetrics:
         return {k: v for k, v in self.__dict__.items() if v is not None}
 
 
-def compute_si_sdr(
-    reference: torch.Tensor, estimated: torch.Tensor
-) -> float:
+def compute_si_sdr(reference: torch.Tensor, estimated: torch.Tensor) -> float:
     """Compute Scale-Invariant Signal-to-Distortion Ratio.
 
     Args:
@@ -60,9 +58,7 @@ def compute_si_sdr(
     return si_sdr.item()
 
 
-def compute_snr(
-    reference: torch.Tensor, noise: torch.Tensor
-) -> float:
+def compute_snr(reference: torch.Tensor, noise: torch.Tensor) -> float:
     """Compute Signal-to-Noise Ratio.
 
     Args:

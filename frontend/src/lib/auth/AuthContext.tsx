@@ -29,6 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const checkAuth = async () => {
     try {
+      await Promise.resolve(); // Prevent synchronous setState in effect
       const token = localStorage.getItem('token');
       if (!token) {
         setLoading(false);
@@ -48,7 +49,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    checkAuth();
+    const timer = setTimeout(() => {
+      checkAuth();
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const login = async (access: string, refresh: string) => {

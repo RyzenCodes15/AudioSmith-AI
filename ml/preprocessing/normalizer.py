@@ -30,9 +30,7 @@ class AudioNormalizer:
             audio = audio / max_val
         return audio
 
-    def denormalize(
-        self, audio: torch.Tensor, original_max: float
-    ) -> torch.Tensor:
+    def denormalize(self, audio: torch.Tensor, original_max: float) -> torch.Tensor:
         """Restore audio to its original amplitude range.
 
         Args:

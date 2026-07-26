@@ -4,10 +4,15 @@ AudioSmith AI — Audio File Model.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from sqlalchemy import Float, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampMixin, UUIDMixin
+
+if TYPE_CHECKING:
+    from app.models.user import User
 
 
 class AudioFile(Base, UUIDMixin, TimestampMixin):

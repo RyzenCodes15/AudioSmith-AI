@@ -9,7 +9,6 @@ changing any business logic, preprocessing, or serving code.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Optional
 
 import torch
 
@@ -59,7 +58,7 @@ class BaseSpeechEnhancer(ABC):
         ...
 
     @abstractmethod
-    def load(self, checkpoint_path: Optional[str] = None) -> None:
+    def load(self, checkpoint_path: str | None = None) -> None:
         """Load model weights.
 
         Args:
@@ -69,7 +68,7 @@ class BaseSpeechEnhancer(ABC):
         ...
 
     @abstractmethod
-    def to_device(self, device: str) -> "BaseSpeechEnhancer":
+    def to_device(self, device: str) -> BaseSpeechEnhancer:
         """Move the model to a specific device.
 
         Args:

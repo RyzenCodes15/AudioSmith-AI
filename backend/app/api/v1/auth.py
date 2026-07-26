@@ -6,6 +6,8 @@ Handles user registration, login, token refresh, and profile access.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from fastapi import APIRouter
 from pydantic import BaseModel
 
@@ -15,8 +17,10 @@ from app.api.v1.schemas.auth import (
     TokenResponse,
     UserResponse,
 )
-from app.dependencies import AuthServiceDep, CurrentUserDep
-from app.models.user import User
+
+if TYPE_CHECKING:
+    from app.dependencies import AuthServiceDep, CurrentUserDep
+    from app.models.user import User
 
 
 class RefreshRequest(BaseModel):
@@ -52,6 +56,7 @@ async def refresh_token(payload: RefreshRequest, auth_service: AuthServiceDep) -
 async def get_current_user(current_user: CurrentUserDep) -> User:
     """Get the current authenticated user's profile."""
     return current_user
+
 
 @router.post("/logout")
 async def logout(current_user: CurrentUserDep) -> dict:

@@ -10,16 +10,19 @@ import io
 import uuid
 from datetime import datetime
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import mutagen
 
-from app.config import Settings
 from app.core.exceptions import NotFoundError, ValidationError
 from app.models.audio_file import AudioFile
 from app.models.processing_job import ProcessingJob
-from app.repositories.audio_repository import AudioRepository
-from app.repositories.job_repository import JobRepository
-from app.services.storage.base import StorageBackend
+
+if TYPE_CHECKING:
+    from app.config import Settings
+    from app.repositories.audio_repository import AudioRepository
+    from app.repositories.job_repository import JobRepository
+    from app.services.storage.base import StorageBackend
 
 
 class AudioService:
@@ -64,12 +67,16 @@ class AudioService:
         if file_size == 0:
             raise ValidationError("File is empty.")
         if file_size > self._settings.upload_max_size_bytes:
-            raise ValidationError(f"File size exceeds maximum allowed ({self._settings.upload_max_size_bytes} bytes).")
+            max_size = self._settings.upload_max_size_bytes
+            raise ValidationError(
+                f"File size exceeds maximum allowed ({max_size} bytes)."
+            )
 
         # Validate extension
         ext = Path(filename).suffix.lower()
         if ext not in self._settings.upload_allowed_extensions:
-            raise ValidationError(f"Unsupported file extension. Allowed: {', '.join(self._settings.upload_allowed_extensions)}")
+            allowed = ", ".join(self._settings.upload_allowed_extensions)
+            raise ValidationError(f"Unsupported file extension. Allowed: {allowed}")
 
         # Extract audio metadata
         try:
@@ -80,11 +87,14 @@ class AudioService:
             sample_rate = getattr(audio_info.info, "sample_rate", 44100)
             channels = getattr(audio_info.info, "channels", 2)
         except Exception as e:
-            raise ValidationError(f"Failed to parse audio metadata: {e}")
+            raise ValidationError(f"Failed to parse audio metadata: {e}") from e
 
         # Validate duration
         if duration > self._settings.ml_max_audio_duration_seconds:
-            raise ValidationError(f"Audio duration exceeds maximum allowed ({self._settings.ml_max_audio_duration_seconds} seconds).")
+            max_dur = self._settings.ml_max_audio_duration_seconds
+            raise ValidationError(
+                f"Audio duration exceeds maximum allowed ({max_dur} seconds)."
+            )
 
         # Generate unique storage path
         file_id = str(uuid.uuid4())
@@ -94,6 +104,7 @@ class AudioService:
         await self._storage.save(storage_path, content)
 
         import logging
+
         logger = logging.getLogger(__name__)
         logger.info(f"Upload received: {filename} ({file_size} bytes, {content_type})")
 
@@ -126,9 +137,9 @@ class AudioService:
 
         # Trigger Celery task
         from app.core.celery_client import celery_client
+
         celery_client.send_task(
-            "worker.tasks.audio_processing.enhance_audio",
-            args=[job_id]
+            "worker.tasks.audio_processing.enhance_audio", args=[job_id]
         )
 
         return {
@@ -195,43 +206,45 @@ class AudioService:
                 continue
 
             job = job_map.get(audio.id)
-            results.append({
-                "id": audio.id,
-                "filename": audio.filename,
-                "file_size_bytes": audio.file_size_bytes,
-                "duration_seconds": audio.duration_seconds,
-                "sample_rate": audio.sample_rate,
-                "channels": audio.channels,
-                "format": audio.format,
-                "uploaded_at": audio.created_at,
-                "status": job.status if job else "completed",
-                "enhanced_file_id": job.enhanced_file_id if job else None,
-            })
+            results.append(
+                {
+                    "id": audio.id,
+                    "filename": audio.filename,
+                    "file_size_bytes": audio.file_size_bytes,
+                    "duration_seconds": audio.duration_seconds,
+                    "sample_rate": audio.sample_rate,
+                    "channels": audio.channels,
+                    "format": audio.format,
+                    "uploaded_at": audio.created_at,
+                    "status": job.status if job else "completed",
+                    "enhanced_file_id": job.enhanced_file_id if job else None,
+                }
+            )
 
         return results
 
     async def get_audio_content(self, audio_id: str, user_id: str) -> tuple[bytes, str]:
         """Get the raw bytes and content type of an audio file.
-        
+
         Args:
             audio_id: ID of the audio file.
             user_id: ID of the requesting user.
-            
+
         Returns:
             Tuple of (raw bytes, filename)
-            
+
         Raises:
             NotFoundError: If the audio file doesn't exist.
         """
         audio = await self._audio_repo.get_by_id(audio_id)
         if not audio or audio.user_id != user_id:
             raise NotFoundError("Audio file", audio_id)
-            
+
         content = await self._storage.load(audio.storage_path)
         return content, audio.filename
 
     async def delete(self, audio_id: str, user_id: str) -> None:
-        """Delete an audio file and its associated data (jobs, enhanced files, storage)."""
+        """Delete an audio file and its associated data."""
         audio = await self._audio_repo.get_by_id(audio_id)
         if not audio or audio.user_id != user_id:
             raise NotFoundError("Audio file", audio_id)
@@ -248,25 +261,23 @@ class AudioService:
         # and also clean up the enhanced file it generated.
         if job_to_delete:
             enhanced_file_id = job_to_delete.enhanced_file_id
-            
+
             # Delete the job record first to prevent FK integrity errors
             await self._job_repo.delete(job_to_delete)
-            
+
             # If the job had an enhanced file, delete its storage and record
             if enhanced_file_id:
                 enhanced_audio = await self._audio_repo.get_by_id(enhanced_file_id)
                 if enhanced_audio:
-                    try:
+                    import contextlib
+                    with contextlib.suppress(Exception):
                         await self._storage.delete(enhanced_audio.storage_path)
-                    except Exception:
-                        pass # Ignore storage deletion errors for enhanced file
                     await self._audio_repo.delete(enhanced_audio)
 
         # 3. Delete the original file storage
-        try:
+        import contextlib
+        with contextlib.suppress(Exception):
             await self._storage.delete(audio.storage_path)
-        except Exception:
-            pass # Ignore if storage is already gone
 
         # 4. Delete original audio DB record
         await self._audio_repo.delete(audio)

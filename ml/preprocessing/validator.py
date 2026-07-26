@@ -39,9 +39,7 @@ class AudioValidator:
 
         # Check dimensions
         if audio.dim() not in (1, 2):
-            raise ValueError(
-                f"Expected 1D or 2D tensor, got {audio.dim()}D."
-            )
+            raise ValueError(f"Expected 1D or 2D tensor, got {audio.dim()}D.")
 
         # Check duration
         num_samples = audio.shape[-1]
@@ -69,6 +67,4 @@ class AudioValidator:
         ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
         if ext not in cls.SUPPORTED_FORMATS:
             supported = ", ".join(sorted(cls.SUPPORTED_FORMATS))
-            raise ValueError(
-                f"Unsupported format '{ext}'. Supported: {supported}"
-            )
+            raise ValueError(f"Unsupported format '{ext}'. Supported: {supported}")

@@ -6,13 +6,17 @@ Data access layer for audio file database operations.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.audio_file import AudioFile
 from app.repositories.base import BaseRepository
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class AudioRepository(BaseRepository[AudioFile]):

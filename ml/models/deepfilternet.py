@@ -8,7 +8,6 @@ This is the production model for speech enhancement.
 from __future__ import annotations
 
 import logging
-from typing import Optional
 
 import torch
 
@@ -53,10 +52,10 @@ class DeepFilterNetAdapter(BaseSpeechEnhancer):
             raise RuntimeError("Model not loaded. Call load() first.")
 
         from df.enhance import enhance as df_enhance
-        
+
         # ensure tensor is on the correct device
         audio = audio.to(self._device)
-        
+
         # DeepFilterNet expects float32 tensor
         if audio.dtype != torch.float32:
             audio = audio.to(torch.float32)
@@ -72,7 +71,7 @@ class DeepFilterNetAdapter(BaseSpeechEnhancer):
         """Return model name."""
         return "DeepFilterNet3"
 
-    def load(self, checkpoint_path: Optional[str] = None) -> None:
+    def load(self, checkpoint_path: str | None = None) -> None:
         """Load DeepFilterNet model weights.
 
         Args:
@@ -83,23 +82,27 @@ class DeepFilterNetAdapter(BaseSpeechEnhancer):
 
         import sys
         import types
+
         import torchaudio
-        
-        # Monkeypatch torchaudio.backend.common for deepfilternet compatibility with torchaudio >= 2.4.0
+
+        # Monkeypatch torchaudio.backend.common for compatibility
         if "torchaudio.backend.common" not in sys.modules:
-            backend = types.ModuleType('torchaudio.backend')
-            common = types.ModuleType('torchaudio.backend.common')
-            common.AudioMetaData = getattr(torchaudio, 'AudioMetaData', type('AudioMetaData', (), {}))
+            backend = types.ModuleType("torchaudio.backend")
+            common = types.ModuleType("torchaudio.backend.common")
+            common.AudioMetaData = getattr(
+                torchaudio, "AudioMetaData", type("AudioMetaData", (), {})
+            )
             backend.common = common
-            sys.modules['torchaudio.backend'] = backend
-            sys.modules['torchaudio.backend.common'] = common
-            
-        from df.enhance import init_df, enhance
-        
+            sys.modules["torchaudio.backend"] = backend
+            sys.modules["torchaudio.backend.common"] = common
+
         # init_df(model_base_dir, config_allow_defaults)
         # We can pass None to download/use default pretrained
         import fcntl
         import os
+
+        from df.enhance import init_df
+
         lock_file = os.path.expanduser("~/.cache/download.lock")
         os.makedirs(os.path.dirname(lock_file), exist_ok=True)
         with open(lock_file, "w") as f:
@@ -108,32 +111,39 @@ class DeepFilterNetAdapter(BaseSpeechEnhancer):
                 self._model, self._df_state, _ = init_df()
             finally:
                 fcntl.flock(f, fcntl.LOCK_UN)
-        
+
         # Determine device dynamically
         if torch.cuda.is_available():
             self._device = "cuda"
         else:
             self._device = "cpu"
-            
+
         if checkpoint_path:
             logger.info(f"Loading custom fine-tuned weights from {checkpoint_path}")
             state_dict = torch.load(checkpoint_path, map_location=self._device)
             if "model_state_dict" in state_dict:
                 wrapper_state_dict = state_dict["model_state_dict"]
                 # Strip 'model.' prefix since Trainer wrapped it in FineTuneWrapper
-                unwrapped_state_dict = {k.replace('model.', ''): v for k, v in wrapper_state_dict.items() if k.startswith('model.')}
+                unwrapped_state_dict = {
+                    k.replace("model.", ""): v
+                    for k, v in wrapper_state_dict.items()
+                    if k.startswith("model.")
+                }
                 if not unwrapped_state_dict:
-                     # fallback if it wasn't prefixed
-                     unwrapped_state_dict = wrapper_state_dict
+                    # fallback if it wasn't prefixed
+                    unwrapped_state_dict = wrapper_state_dict
                 self._model.load_state_dict(unwrapped_state_dict, strict=False)
             else:
                 self._model.load_state_dict(state_dict, strict=False)
-                
+
         self._model = self._model.to(self._device)
         self._loaded = True
-        logger.info(f"Model loaded successfully. Device selected: {self._device}. Model version: DeepFilterNet3")
+        logger.info(
+            f"Model loaded successfully. Device selected: {self._device}. "
+            "Model version: DeepFilterNet3"
+        )
 
-    def to_device(self, device: str) -> "DeepFilterNetAdapter":
+    def to_device(self, device: str) -> DeepFilterNetAdapter:
         """Move model to device."""
         self._device = device
         if self._loaded and self._model is not None:

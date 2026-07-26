@@ -11,34 +11,39 @@ without having to train from scratch on a GPU.
 from __future__ import annotations
 
 import logging
-import os
-from pathlib import Path
-
-import torch
 
 # Fix deepfilternet torchaudio compatibility
 import sys
 import types
+from pathlib import Path
+
+import torch
 import torchaudio
 
 if "torchaudio.backend.common" not in sys.modules:
     backend = types.ModuleType("torchaudio.backend")
     common = types.ModuleType("torchaudio.backend.common")
-    common.AudioMetaData = getattr(torchaudio, "AudioMetaData", type("AudioMetaData", (), {}))
+    common.AudioMetaData = getattr(
+        torchaudio, "AudioMetaData", type("AudioMetaData", (), {})
+    )
     backend.common = common
     sys.modules["torchaudio.backend"] = backend
     sys.modules["torchaudio.backend.common"] = common
 
 from df.enhance import init_df
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
-def export_pretrained_as_checkpoint(output_path: str = "checkpoints/best_model.pt") -> None:
+def export_pretrained_as_checkpoint(
+    output_path: str = "checkpoints/best_model.pt",
+) -> None:
     """Load official DeepFilterNet3 pretrained weights and save them as an AudioSmith checkpoint."""
     logger.info("Initializing official pretrained DeepFilterNet model...")
-    df_model, df_state, _ = init_df()
+    df_model, _df_state, _ = init_df()
 
     logger.info("Extracting model state dict...")
     raw_state_dict = df_model.state_dict()

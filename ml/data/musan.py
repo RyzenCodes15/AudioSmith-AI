@@ -8,7 +8,6 @@ Used as the noise source for creating noisy training pairs.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Tuple
 
 import torch
 
@@ -50,7 +49,7 @@ class MUSANDataset(BaseAudioDataset):
     def __len__(self) -> int:
         return len(self._file_list)
 
-    def __getitem__(self, index: int) -> Tuple[torch.Tensor, int]:
+    def __getitem__(self, index: int) -> tuple[torch.Tensor, int]:
         # Future: load with torchaudio
         # audio, sr = torchaudio.load(self._file_list[index])
         # return audio, sr

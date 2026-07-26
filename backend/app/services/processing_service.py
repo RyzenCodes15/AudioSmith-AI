@@ -6,8 +6,12 @@ Business logic for audio processing job management.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from app.core.exceptions import NotFoundError
-from app.repositories.job_repository import JobRepository
+
+if TYPE_CHECKING:
+    from app.repositories.job_repository import JobRepository
 
 
 class ProcessingService:

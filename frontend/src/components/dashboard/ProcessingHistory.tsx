@@ -54,7 +54,7 @@ export function ProcessingHistory({ refreshTrigger }: { refreshTrigger: number }
         if (hasPending && isSubscribed) {
           timeoutId = setTimeout(() => fetchHistory(false), 3000);
         }
-      } catch (err) {
+      } catch {
         const error = err as Error;
         if (isSubscribed) setError(error.message || 'Failed to load history');
       } finally {
@@ -100,7 +100,7 @@ export function ProcessingHistory({ refreshTrigger }: { refreshTrigger: number }
       setUploads(prev => prev.filter(u => !selectedIds.has(u.id)));
       showToast(`Successfully deleted ${selectedIds.size} files`, 'success');
       setSelectedIds(new Set());
-    } catch (e) {
+    } catch {
       showToast('Failed to delete some files. They may already be removed.', 'error');
       // Refresh to get actual state
       const data = await ApiClient.get<AudioUpload[]>('/uploads').catch(() => []);
@@ -123,7 +123,7 @@ export function ProcessingHistory({ refreshTrigger }: { refreshTrigger: number }
         next.delete(id);
         return next;
       });
-    } catch (err) {
+    } catch {
       showToast('Failed to delete file', 'error');
     }
   };
@@ -140,7 +140,7 @@ export function ProcessingHistory({ refreshTrigger }: { refreshTrigger: number }
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-    } catch (err) {
+    } catch {
       showToast('Failed to download file', 'error');
     }
   };

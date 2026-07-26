@@ -48,8 +48,8 @@ export function RegisterForm() {
       
       await login(response.access_token, response.refresh_token);
       router.push('/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Registration failed. Please try again.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
     }

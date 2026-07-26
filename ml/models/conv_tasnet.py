@@ -8,7 +8,6 @@ BaseSpeechEnhancer interface. Used for benchmarking and evaluation only.
 from __future__ import annotations
 
 import logging
-from typing import Optional
 
 import torch
 
@@ -78,7 +77,7 @@ class ConvTasNetAdapter(BaseSpeechEnhancer):
         """Return model name."""
         return "Conv-TasNet"
 
-    def load(self, checkpoint_path: Optional[str] = None) -> None:
+    def load(self, checkpoint_path: str | None = None) -> None:
         """Load Conv-TasNet model weights.
 
         Args:
@@ -96,12 +95,12 @@ class ConvTasNetAdapter(BaseSpeechEnhancer):
         #
         # Option B — Asteroid:
         # from asteroid.models import ConvTasNet
-        # self._model = ConvTasNet.from_pretrained("mpariente/ConvTasNet_WHAM!_sepclean")
+        # self._model = ConvTasNet.from_pretrained("mpariente/ConvTasNet_WHAM...")
 
         self._loaded = True
         logger.info("Conv-TasNet model loaded successfully.")
 
-    def to_device(self, device: str) -> "ConvTasNetAdapter":
+    def to_device(self, device: str) -> ConvTasNetAdapter:
         """Move model to device."""
         self._device = device
         if self._model is not None:

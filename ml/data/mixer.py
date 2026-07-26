@@ -40,7 +40,9 @@ class AudioMixer:
         if noise_len < clean_len:
             # Repeat noise to fill
             repeats = (clean_len // noise_len) + 1
-            noise = noise.repeat(1, repeats) if noise.dim() == 2 else noise.repeat(repeats)
+            noise = (
+                noise.repeat(1, repeats) if noise.dim() == 2 else noise.repeat(repeats)
+            )
 
         noise = noise[..., :clean_len]
 
@@ -72,9 +74,6 @@ class AudioMixer:
         Returns:
             Tuple of (mixed_audio, actual_snr_db).
         """
-        snr_db = (
-            torch.rand(1).item() * (snr_range[1] - snr_range[0])
-            + snr_range[0]
-        )
+        snr_db = torch.rand(1).item() * (snr_range[1] - snr_range[0]) + snr_range[0]
         mixed = AudioMixer.mix(clean, noise, snr_db)
         return mixed, snr_db

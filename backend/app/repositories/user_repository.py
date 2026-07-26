@@ -6,11 +6,15 @@ Data access layer for user-related database operations.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
 from app.repositories.base import BaseRepository
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class UserRepository(BaseRepository[User]):

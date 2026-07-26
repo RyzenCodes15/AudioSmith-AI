@@ -6,8 +6,8 @@ Creates and configures the FastAPI application instance.
 
 from __future__ import annotations
 
-from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from typing import TYPE_CHECKING
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,11 +15,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.router import api_v1_router
 from app.config import get_settings
 
+if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan — startup and shutdown hooks."""
-    settings = get_settings()
+    get_settings()
 
     # ── Startup ──────────────────────────────────────────────────────
     # Future: initialize database connection pool
@@ -40,7 +43,8 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title=settings.app_name,
         version=settings.app_version,
-        description="AI-powered speech enhancement — remove background noise from human speech.",
+        description=("AI-powered speech enhancement — "
+            "remove background noise from human speech."),
         docs_url="/api/docs" if not settings.is_production else None,
         redoc_url="/api/redoc" if not settings.is_production else None,
         openapi_url="/api/openapi.json" if not settings.is_production else None,

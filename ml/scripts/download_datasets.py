@@ -40,7 +40,11 @@ def download_voicebank_demand(output_dir: Path) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Download AudioSmith ML datasets.")
     parser.add_argument("--output-dir", type=Path, default=Path("data"))
-    parser.add_argument("--dataset", choices=["all", "librispeech", "musan", "voicebank-demand"], default="all")
+    parser.add_argument(
+        "--dataset",
+        choices=["all", "librispeech", "musan", "voicebank-demand"],
+        default="all",
+    )
 
     args = parser.parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)

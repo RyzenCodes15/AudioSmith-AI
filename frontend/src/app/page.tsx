@@ -46,16 +46,16 @@ export default function Home() {
               <div className={styles.demoVisualizer}>
                 <div className={styles.waveformOriginal}>
                   {/* CSS visualizer lines */}
-                  {Array.from({ length: 24 }).map((_, i) => (
-                    <div key={i} className={styles.waveBar} style={{ height: `${20 + Math.random() * 60}%` }} />
+                  {[45, 60, 35, 70, 25, 80, 50, 40, 65, 30, 55, 75, 45, 60, 35, 70, 25, 80, 50, 40, 65, 30, 55, 75].map((h, i) => (
+                    <div key={i} className={styles.waveBar} style={{ height: `${h}%` }} />
                   ))}
                 </div>
                 <div className={styles.demoDivider}>
                   <span>AI Denoising</span>
                 </div>
                 <div className={styles.waveformEnhanced}>
-                  {Array.from({ length: 24 }).map((_, i) => (
-                    <div key={i} className={styles.waveBarClean} style={{ height: `${10 + Math.random() * 30}%` }} />
+                  {[20, 25, 15, 30, 10, 35, 20, 15, 25, 10, 20, 30, 20, 25, 15, 30, 10, 35, 20, 15, 25, 10, 20, 30].map((h, i) => (
+                    <div key={i} className={styles.waveBarClean} style={{ height: `${h}%` }} />
                   ))}
                 </div>
               </div>
