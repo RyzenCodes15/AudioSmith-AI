@@ -1,6 +1,6 @@
 <div align="center">
 
-# AudioSmith AI 🎙️
+# AudioSmith AI
 
 **Production-Grade Artificial Intelligence for Professional Audio Enhancement**
 
@@ -24,17 +24,17 @@ AudioSmith AI is a full-stack platform engineered to deliver pristine speech den
 
 <br />
 
-[Features](#-features) •
-[Architecture](#-architecture) •
-[Tech Stack](#-tech-stack) •
-[Getting Started](#-getting-started) •
-[Screenshots](#-application-walkthrough)
+[Features](#features) •
+[Architecture](#architecture) •
+[Tech Stack](#tech-stack) •
+[Getting Started](#getting-started) •
+[Screenshots](#application-walkthrough)
 
 </div>
 
 ---
 
-# 📸 Application Walkthrough
+# Application Walkthrough
 
 ## Landing Page
 <div align="center">
@@ -90,7 +90,7 @@ Interactive side-by-side evaluation of original and enhanced audio. Includes wav
 
 ---
 
-# ✨ Features
+# Features
 
 ### Authentication
 * **JWT**: Stateless, highly secure token-based access.
@@ -140,7 +140,7 @@ Interactive side-by-side evaluation of original and enhanced audio. Includes wav
 
 ---
 
-# 🧠 AI / ML Engineering
+# AI / ML Engineering
 
 AudioSmith AI is fundamentally driven by advanced machine learning engineering, prioritizing low-latency inference and high-fidelity output. 
 
@@ -170,7 +170,7 @@ The platform's machine learning scripts seamlessly integrate with industry-stand
 
 ---
 
-# 💻 Tech Stack
+# Tech Stack
 
 | Domain | Technology |
 | :--- | :--- |
@@ -186,7 +186,7 @@ The platform's machine learning scripts seamlessly integrate with industry-stand
 
 ---
 
-# 🏛️ Architecture
+# Architecture
 
 AudioSmith AI follows a strictly decoupled architecture, ensuring that heavy machine learning workloads never block the HTTP layer.
 
@@ -223,7 +223,7 @@ AudioSmith AI follows a strictly decoupled architecture, ensuring that heavy mac
 
 ---
 
-# 📁 Project Structure
+# Project Structure
 
 ```text
 AudioSmith/
@@ -253,7 +253,7 @@ AudioSmith/
 
 ---
 
-# 🚀 Getting Started
+# Getting Started
 
 Follow these steps to launch the entire AudioSmith AI stack locally.
 
@@ -305,7 +305,7 @@ docker compose down -v
 
 ---
 
-# ⚙️ AI Processing Pipeline
+# AI Processing Pipeline
 
 <div align="center">
 
@@ -340,7 +340,7 @@ docker compose down -v
 
 ---
 
-# 📐 Design Principles
+# Design Principles
 
 * **Clean Architecture**: System boundaries are strictly enforced. The Next.js frontend has absolutely no knowledge of the PyTorch implementation, interacting only via standardized REST contracts.
 * **Separation of Concerns**: Each microservice handles one specific domain. The API routes traffic, the Worker infers, and the UI renders.
@@ -352,7 +352,7 @@ docker compose down -v
 
 ---
 
-# 🗺️ Future Roadmap
+# Future Roadmap
 
 * Training from scratch
 * Model benchmarking
