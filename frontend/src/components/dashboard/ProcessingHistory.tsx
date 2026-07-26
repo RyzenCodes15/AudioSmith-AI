@@ -54,7 +54,7 @@ export function ProcessingHistory({ refreshTrigger }: { refreshTrigger: number }
         if (hasPending && isSubscribed) {
           timeoutId = setTimeout(() => fetchHistory(false), 3000);
         }
-      } catch {
+      } catch (err: unknown) {
         const error = err as Error;
         if (isSubscribed) setError(error.message || 'Failed to load history');
       } finally {
