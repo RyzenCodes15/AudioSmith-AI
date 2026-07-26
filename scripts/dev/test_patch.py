@@ -1,4 +1,3 @@
-
 with open("scripts/download_assets.sh", "r") as f:
     dl_script = f.read()
 original = len(dl_script)

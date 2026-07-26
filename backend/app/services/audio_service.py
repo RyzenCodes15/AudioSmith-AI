@@ -270,12 +270,14 @@ class AudioService:
                 enhanced_audio = await self._audio_repo.get_by_id(enhanced_file_id)
                 if enhanced_audio:
                     import contextlib
+
                     with contextlib.suppress(Exception):
                         await self._storage.delete(enhanced_audio.storage_path)
                     await self._audio_repo.delete(enhanced_audio)
 
         # 3. Delete the original file storage
         import contextlib
+
         with contextlib.suppress(Exception):
             await self._storage.delete(audio.storage_path)
 

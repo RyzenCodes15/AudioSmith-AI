@@ -43,8 +43,9 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title=settings.app_name,
         version=settings.app_version,
-        description=("AI-powered speech enhancement — "
-            "remove background noise from human speech."),
+        description=(
+            "AI-powered speech enhancement — remove background noise from human speech."
+        ),
         docs_url="/api/docs" if not settings.is_production else None,
         redoc_url="/api/redoc" if not settings.is_production else None,
         openapi_url="/api/openapi.json" if not settings.is_production else None,
