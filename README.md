@@ -4,7 +4,7 @@
 
 **Production-Grade Artificial Intelligence for Professional Audio Enhancement**
 
-AudioSmith AI is a sophisticated full-stack platform engineered to deliver pristine speech enhancement through state-of-the-art deep learning. Designed specifically for audio engineers, podcasters, and content creators, the application seamlessly removes complex background noise and reverberation while preserving the natural fidelity of human speech. 
+AudioSmith AI is a full-stack platform engineered to deliver pristine speech denoising through state-of-the-art deep learning. Designed specifically for audio engineers, podcasters, and content creators, the application seamlessly removes complex background noise and reverberation while preserving the natural fidelity of human speech. 
 
 <br />
 
@@ -354,7 +354,6 @@ docker compose down -v
 
 # 🗺️ Future Roadmap
 
-* Custom fine-tuned models
 * Training from scratch
 * Model benchmarking
 * Additional denoising architectures
